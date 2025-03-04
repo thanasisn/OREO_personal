@@ -1,0 +1,140 @@
+---
+title:  Methodology @marinou2017
+author: Thanasis Natsis
+format: beamer
+editor: visual
+include-in-header: 
+  - \usepackage{tikz}
+  - \usetikzlibrary{arrows}
+---
+
+## CALIOP input
+
+### Observations
+
+- Aerosol backscatter profiles @ 532 1064
+- Polarized component @ 532
+  - Parallel
+  - Perpendicular
+- Horizontal/Vertical resolution
+
+### L2 product
+
+- Aerosol backscatter & extinction
+- Cloud backscatter & extinction
+- Linear particle depolarization ratio
+
+
+
+## CALIOP L2 algorithm
+
+### Separates atmospheric layers
+
+- Aerosols
+- Clouds
+- Surface
+
+### Characterize each atmospheric layers
+
+
+```{mermaid}
+%%| fig-width: 60%
+%%{init: {"flowchart": {"htmlLabels": false}} }%%
+flowchart LR
+  A["`
+  **By:**
+  - Surface type
+  - Layer backscattering
+  - Depolarization ratio
+  - Aerosol layer height
+  `"]
+  B["`
+  **Define subtype:**
+  - Dust
+  - Polluted dust
+  - Clean continental
+  - Polluted continental
+  - Marine
+  - Smoke
+  `"]
+  C["`
+  **New L3:**
+  - Choose LR to use by subtype
+  `"]
+  A ==> B ==> C
+  style A text-align:left
+  style B text-align:left
+```
+
+
+## New L3 product
+
+- Grid $2^\circ$ x $5^\circ$
+- Mean profiles of extinction
+- Mean AOD
+
+
+## Optimization with EARLINET
+
+With @amiridis2013:
+
+- Monthly $1^\circ$ x $1^\circ$ pure dust extinction
+- EARLINET & LIVAS
+
+Decoupled
+
+- Pure dust backscatter coef.
+- Total aerosol backscatter
+
+By:
+
+- Depolarization measurements
+- Assume pure dust $\delta_d = 0.31$
+ 
+Improvements over CALIPSO L2
+
+
+
+## Quality control screening CALIPSO L3
+
+- Remove any clouds any profile
+- Remove profiles by CAD score/cirrus fringes
+- ... and more
+
+Pure dust extinction 
+by LR 55sr instead 40sr
+over Europe
+
+
+
+## Dust products
+
+:::::: columns
+::: {.column width="49%"}
+**Climatological** (amiridis2013)
+
+- No dust aerosol types set to 0 when averaging
+- Clim-DE
+- DOD
+- Proven for Sahara/Europe
+:::
+
+::: {.column width="1%"}
+<!-- space --->
+:::
+
+::: {.column width="49%"}
+**Conditional**
+
+- Average dust extinction where dust is present
+- Ignore non-dust observations (set to NA)
+- Con-DE
+:::
+
+::::::
+
+## Comparisons
+
+- MODIS-Terra
+- MACC + RegCM4
+
