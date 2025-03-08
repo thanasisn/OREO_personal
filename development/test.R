@@ -40,7 +40,8 @@
 #+ include=F
 
 #'
-#' **Details and source code: [`github.com/thanasisn/BBand_LAP`](https://github.com/thanasisn/BBand_LAP)**
+#' https://rpubs.com/alobo/vectorplot
+#' https://docs.unidata.ucar.edu/idv/current/workshop/overview/WhatIsIdv.html
 #'
 
 #+ include=F
