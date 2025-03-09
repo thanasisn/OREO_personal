@@ -79,7 +79,10 @@ library(lubridate,  warn.conflicts = FALSE, quietly = TRUE)
 library(pander,     warn.conflicts = FALSE, quietly = TRUE)
 library(ggplot2,    warn.conflicts = FALSE, quietly = TRUE)
 library(yaml,       warn.conflicts = FALSE, quietly = TRUE)
+library(colorRamps, warn.conflicts = FALSE, quietly = TRUE)
 library(RNetCDF,    warn.conflicts = FALSE, quietly = TRUE)
+library(raster,     warn.conflicts = FALSE, quietly = TRUE)
+library(rasterVis,  warn.conflicts = FALSE, quietly = TRUE) # devtools::install_github("oscarperpinan/rastervis")
 
 
 #+ include=T, echo=F, results="asis"
@@ -102,13 +105,51 @@ NC <- open.nc("~/OREO/operation/DOMOS/2020_DJF.nc")
 
 
 print.nc(NC)
+
 U <- var.get.nc(NC, "U")
 V <- var.get.nc(NC, "V")
 
 dim(U)
 dim(V)
 
-raster(U[, , 1])
+summary(U)
+summary(V)
+
+plot(raster(U[, , 1]))
+
+
+plot(raster(t(U[, , 1])[ncol(U):1, ]))
+
+u1 <- raster(t(U[, , 1])[ncol(U):1, ])
+v1 <- raster(t(V[, , 1])[ncol(V):1, ])
+
+u1 <- raster((U[, , 1]))
+v1 <- raster((V[, , 1]))
+
+w <- brick(u1, v1)
+
+wlon <- var.get.nc(NC, "Longitude")
+wlat <- var.get.nc(NC, "Latitude")
+
+range(wlon)
+range(wlat)
+
+projection(w) <- CRS("EPSG:4326")
+extent(w)     <- c(min(wlon), max(wlon), min(wlat), max(wlat))
+w
+
+plot(w[[1]])
+plot(w[[2]])
+
+vectorplot(w * 10, isField = "dXY", region = FALSE, margin = FALSE, narrows = 10000)
+
+slope <- sqrt(w[[1]]^2 + w[[2]]^2)
+aspect <- atan2(w[[1]], w[[2]])
+vectorplot(w * 10, isField = "dXY", region = slope, margin = FALSE, par.settings = rasterTheme(region = matlab.like(n = 10)),
+           narrows = 10000, at = 0:10)
+
+
+vectorplot(stack(slope * 10, aspect), isField = TRUE, region = FALSE, margin = FALSE)
 
 
 
