@@ -79,6 +79,8 @@ library(lubridate,  warn.conflicts = FALSE, quietly = TRUE)
 library(pander,     warn.conflicts = FALSE, quietly = TRUE)
 library(ggplot2,    warn.conflicts = FALSE, quietly = TRUE)
 library(yaml,       warn.conflicts = FALSE, quietly = TRUE)
+library(RNetCDF,    warn.conflicts = FALSE, quietly = TRUE)
+
 
 #+ include=T, echo=F, results="asis"
 ##  Open dataset  --------------------------------------------------------------
@@ -94,7 +96,22 @@ cnf <- read_yaml(cnf_domus)
 #'
 #+ include=T, echo=T, results="asis", warning=FALSE
 
-cnf$ERA5$path_raw
+listfiles <- list.files( cnf$ERA5$path_raw, full.names = T)
+
+NC <- open.nc("~/OREO/operation/DOMOS/2020_DJF.nc")
+
+
+print.nc(NC)
+U <- var.get.nc(NC, "U")
+V <- var.get.nc(NC, "V")
+
+dim(U)
+dim(V)
+
+raster(U[, , 1])
+
+
+
 
 
 #' \FloatBarrier
