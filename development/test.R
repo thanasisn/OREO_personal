@@ -81,6 +81,8 @@ library(ggplot2,    warn.conflicts = FALSE, quietly = TRUE)
 library(yaml,       warn.conflicts = FALSE, quietly = TRUE)
 library(colorRamps, warn.conflicts = FALSE, quietly = TRUE)
 library(RNetCDF,    warn.conflicts = FALSE, quietly = TRUE)
+library(ncdf4,      warn.conflicts = FALSE, quietly = TRUE)
+library(terra,      warn.conflicts = FALSE, quietly = TRUE)
 library(raster,     warn.conflicts = FALSE, quietly = TRUE)
 library(rasterVis,  warn.conflicts = FALSE, quietly = TRUE) # devtools::install_github("oscarperpinan/rastervis")
 
@@ -151,8 +153,26 @@ vectorplot(w * 10, isField = "dXY", region = slope, margin = FALSE, par.settings
 
 vectorplot(stack(slope * 10, aspect), isField = TRUE, region = FALSE, margin = FALSE)
 
-readOGR(dsn = "~/GISdata/Layers/world-administrative-boundaries/", layer = "countries", stringsAsFactors = TRUE)
+## with terra
+map <- vect("~/GISdata/Layers/world-administrative-boundaries/world-administrative-boundaries.shp")
+plot(map)
+uv <- rast("~/OREO/operation/DOMOS/2020_DJF.nc")
+# plot(uv)
 
+getClass(map)
+
+library(latticeExtra)
+library(sp)
+
+map <- sf::st_as_sf(map)
+
+vectorplot(w * 10,
+           isField = "dXY",
+           region = slope,
+           margin = FALSE,
+           par.settings = rasterTheme(region = matlab.like(n = 10)),
+           narrows = 10000, at = 0:10) +
+  layer(sp.polygons(map))
 
 
 #' \FloatBarrier
