@@ -151,7 +151,7 @@ vectorplot(w * 10, isField = "dXY", region = slope, margin = FALSE, par.settings
 
 vectorplot(stack(slope * 10, aspect), isField = TRUE, region = FALSE, margin = FALSE)
 
-
+readOGR(dsn = "~/GISdata/Layers/world-administrative-boundaries/", layer = "countries", stringsAsFactors = TRUE)
 
 
 
