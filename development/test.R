@@ -104,12 +104,15 @@ cnf <- read_yaml(cnf_domus)
 listfiles <- list.files( cnf$ERA5$path_raw, full.names = T)
 
 NC <- open.nc("~/OREO/operation/DOMOS/2020_DJF.nc")
-
-
 print.nc(NC)
-
 U <- var.get.nc(NC, "U")
 V <- var.get.nc(NC, "V")
+
+
+# NC <- open.nc("~/DATA/ERA5_domos_raw/ERA5_2019_90N-90S-180W180E.nc")
+# print.nc(NC)
+# U <- var.get.nc(NC, "u")
+# V <- var.get.nc(NC, "v")
 
 dim(U)
 dim(V)
@@ -125,8 +128,12 @@ plot(raster(t(U[, , 1])[ncol(U):1, ]))
 u1 <- raster(t(U[, , 1])[ncol(U):1, ])
 v1 <- raster(t(V[, , 1])[ncol(V):1, ])
 
-u1 <- raster((U[, , 1]))
-v1 <- raster((V[, , 1]))
+# u1 <- raster((U[, , 1]))
+# v1 <- raster((V[, , 1]))
+#
+# u1 <- raster(t(U[, , 1]))
+# v1 <- raster(t(V[, , 1]))
+
 
 w <- brick(u1, v1)
 
@@ -143,28 +150,26 @@ w
 plot(w[[1]])
 plot(w[[2]])
 
-vectorplot(w * 10, isField = "dXY", region = FALSE, margin = FALSE, narrows = 10000)
+vectorplot(w * 10, isField = "dXY", region = FALSE, margin = FALSE, narrows = 5000)
 
-slope <- sqrt(w[[1]]^2 + w[[2]]^2)
+slope  <- sqrt(w[[1]]^2 + w[[2]]^2)
 aspect <- atan2(w[[1]], w[[2]])
-vectorplot(w * 10, isField = "dXY", region = slope, margin = FALSE, par.settings = rasterTheme(region = matlab.like(n = 10)),
+vectorplot(w * 1, isField = "dXY", region = slope, margin = FALSE,
+           par.settings = rasterTheme(region = blue2red(n = 20)),
            narrows = 10000, at = 0:10)
-
 
 vectorplot(stack(slope * 10, aspect), isField = TRUE, region = FALSE, margin = FALSE)
 
 ## with terra
 map <- vect("~/GISdata/Layers/world-administrative-boundaries/world-administrative-boundaries.shp")
-plot(map)
-uv <- rast("~/OREO/operation/DOMOS/2020_DJF.nc")
+# plot(map)
+# uv <- rast("~/OREO/operation/DOMOS/2020_DJF.nc")
 # plot(uv)
-
-getClass(map)
 
 library(latticeExtra)
 library(sp)
 
-map <- sf::st_as_sf(map)
+map <- as(map, "Spatial")
 
 vectorplot(w * 10,
            isField = "dXY",
@@ -174,6 +179,9 @@ vectorplot(w * 10,
            narrows = 10000, at = 0:10) +
   layer(sp.polygons(map))
 
+plot(slope[,,1])
+
+plot(raster(slope))
 
 #' \FloatBarrier
 #+ results="asis", echo=FALSE
