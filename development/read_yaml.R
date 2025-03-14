@@ -75,22 +75,14 @@ if (!interactive()) {
 ## __ Load libraries  ----------------------------------------------------------
 library(data.table, warn.conflicts = FALSE, quietly = TRUE)
 library(dplyr,      warn.conflicts = FALSE, quietly = TRUE)
-library(lubridate,  warn.conflicts = FALSE, quietly = TRUE)
-library(pander,     warn.conflicts = FALSE, quietly = TRUE)
-library(ggplot2,    warn.conflicts = FALSE, quietly = TRUE)
 library(yaml,       warn.conflicts = FALSE, quietly = TRUE)
-library(colorRamps, warn.conflicts = FALSE, quietly = TRUE)
-library(RNetCDF,    warn.conflicts = FALSE, quietly = TRUE)
-library(ncdf4,      warn.conflicts = FALSE, quietly = TRUE)
-library(terra,      warn.conflicts = FALSE, quietly = TRUE)
-library(raster,     warn.conflicts = FALSE, quietly = TRUE)
-library(rasterVis,  warn.conflicts = FALSE, quietly = TRUE) # devtools::install_github("oscarperpinan/rastervis")
 
 
 #+ include=T, echo=F, results="asis"
 ##  Open dataset  --------------------------------------------------------------
-cnf_domus <- paste0("~/OREO/operation/DOMOS/", Sys.info()["nodename"], ".yaml")
+cnf_domus <- paste0("~/OREO/operation/run_profiles/", Sys.info()["nodename"], ".yaml")
 cnf <- read_yaml(cnf_domus)
+
 
 ##  Daily data -----------------------------------------------
 #'
@@ -101,87 +93,44 @@ cnf <- read_yaml(cnf_domus)
 #'
 #+ include=T, echo=T, results="asis", warning=FALSE
 
-listfiles <- list.files( cnf$ERA5$path_raw, full.names = T)
 
-NC <- open.nc("~/OREO/operation/DOMOS/2020_DJF.nc")
-print.nc(NC)
-U <- var.get.nc(NC, "U")
-V <- var.get.nc(NC, "V")
+cnf$ERA5$West
+cnf$ERA5$East
+cnf$ERA5$LatStep
+
+cnf$ERA5$South
+cnf$ERA5$North
+cnf$ERA5$LonStep
+
+(25 %/% 3)*3
+a <- seq(-19, 31 , .25)
+a <- seq(19, 31 , .25)
+
+sign(a) * (abs(a) %/% 5) * 5
+sign(a) * (abs(ceiling(a)) %/% 5) * 5
+sign(a) * (abs(ceiling(a*5)) %/% 5)
+
+abs(a*5) %/% 5 * 5 /5
+
+abs(ceiling(a*5)%/%5) * 5
+
+sign(a) * (abs(a) + 5 - (abs(a) %% 5))
+
+up <- c(-11, 12) # -> -10 15
+dn <- c(-11, 12) # -> -15 10
+
+sign(up) * (abs(up) + 5 - (abs(up) %% 5))
+
+sign(up) * abs(up) %/% 5 * 5
+
+abs(up) %% 5
+
+up + 5 - up %% 5
+dn - dn %% 5
 
 
-# NC <- open.nc("~/DATA/ERA5_domos_raw/ERA5_2019_90N-90S-180W180E.nc")
-# print.nc(NC)
-# U <- var.get.nc(NC, "u")
-# V <- var.get.nc(NC, "v")
 
-dim(U)
-dim(V)
-
-summary(U)
-summary(V)
-
-plot(raster(U[, , 1]))
-
-
-plot(raster(t(U[, , 1])[ncol(U):1, ]))
-
-u1 <- raster(t(U[, , 1])[ncol(U):1, ])
-v1 <- raster(t(V[, , 1])[ncol(V):1, ])
-
-# u1 <- raster((U[, , 1]))
-# v1 <- raster((V[, , 1]))
-#
-# u1 <- raster(t(U[, , 1]))
-# v1 <- raster(t(V[, , 1]))
-
-
-w <- brick(u1, v1)
-
-wlon <- var.get.nc(NC, "Longitude")
-wlat <- var.get.nc(NC, "Latitude")
-
-range(wlon)
-range(wlat)
-
-projection(w) <- CRS("EPSG:4326")
-extent(w)     <- c(min(wlon), max(wlon), min(wlat), max(wlat))
-w
-
-plot(w[[1]])
-plot(w[[2]])
-
-vectorplot(w * 10, isField = "dXY", region = FALSE, margin = FALSE, narrows = 5000)
-
-slope  <- sqrt(w[[1]]^2 + w[[2]]^2)
-aspect <- atan2(w[[1]], w[[2]])
-vectorplot(w * 1, isField = "dXY", region = slope, margin = FALSE,
-           par.settings = rasterTheme(region = blue2red(n = 20)),
-           narrows = 10000, at = 0:10)
-
-vectorplot(stack(slope * 10, aspect), isField = TRUE, region = FALSE, margin = FALSE)
-
-## with terra
-map <- vect("~/GISdata/Layers/world-administrative-boundaries/world-administrative-boundaries.shp")
-# plot(map)
-# uv <- rast("~/OREO/operation/DOMOS/2020_DJF.nc")
-# plot(uv)
-
-library(latticeExtra)
-library(sp)
-
-map <- as(map, "Spatial")
-
-vectorplot(w * 10,
-           isField = "dXY",
-           region = slope,
-           margin = FALSE,
-           par.settings = rasterTheme(region = matlab.like(n = 10)),
-           narrows = 10000, at = 0:10) +
-  layer(sp.polygons(map))
-
-plot(slope[,,1])
-
-plot(raster(slope))
+ceiling()
 
 #' \FloatBarrier
 #+ results="asis", echo=FALSE
