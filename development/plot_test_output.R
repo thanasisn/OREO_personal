@@ -108,7 +108,6 @@ print.nc(NC)
 U <- var.get.nc(NC, "U")
 V <- var.get.nc(NC, "V")
 
-
 # NC <- open.nc("~/DATA/ERA5_domos_raw/ERA5_2019_90N-90S-180W180E.nc")
 # print.nc(NC)
 # U <- var.get.nc(NC, "u")
@@ -144,9 +143,10 @@ range(wlat)
 projection(w) <- CRS("EPSG:4326")
 extent(w)     <- c(min(wlon), max(wlon), min(wlat), max(wlat))
 w
+summary(w)
 
-plot(w[[1]])
-plot(w[[2]])
+# plot(w[[1]])
+# plot(w[[2]])
 
 vectorplot(w * 10, isField = "dXY", region = FALSE, margin = FALSE, narrows = 5000)
 
@@ -154,9 +154,12 @@ slope  <- sqrt(w[[1]]^2 + w[[2]]^2)
 aspect <- atan2(w[[1]], w[[2]])
 vectorplot(w * 1, isField = "dXY", region = slope, margin = FALSE,
            par.settings = rasterTheme(region = blue2red(n = 20)),
-           narrows = 10000, at = 0:10)
+           narrows = 10000)
 
 vectorplot(stack(slope * 10, aspect), isField = TRUE, region = FALSE, margin = FALSE)
+
+vectorplot(w, isField = T)
+
 
 ## with terra
 map <- vect("~/GISdata/Layers/world-administrative-boundaries/world-administrative-boundaries.shp")
@@ -173,13 +176,76 @@ vectorplot(w * 10,
            isField = "dXY",
            region = slope,
            margin = FALSE,
-           par.settings = rasterTheme(region = matlab.like(n = 10)),
-           narrows = 10000, at = 0:10) +
+           par.settings = rasterTheme(region = blue2red(n = 20)),
+           narrows = 1000) +
   layer(sp.polygons(map))
 
-plot(slope[,,1])
 
-plot(raster(slope))
+
+NC <- open.nc("~/DATA/ERA5_domos_regrid/test_output/2020_DJF.nc")
+print.nc(NC)
+U <- var.get.nc(NC, "U")
+V <- var.get.nc(NC, "V")
+
+wlon <- var.get.nc(NC, "Longitude")
+wlat <- var.get.nc(NC, "Latitude")
+
+levels <- dim(U)[3]
+
+for (ll in levels) {
+  u <- raster(t(U[, , ll])[ncol(U):ll, ])
+  v <- raster(t(V[, , ll])[ncol(V):ll, ])
+  ## stack layers
+  w <- brick(u, v)
+  ## apply geo coordinates
+  projection(w) <- CRS("EPSG:4326")
+  extent(w)     <- c(min(wlon), max(wlon), min(wlat), max(wlat))
+  slope         <- sqrt(w[[1]]^2 + w[[2]]^2)
+  p <- vectorplot(w * 10,
+             isField = "dXY",
+             region = slope,
+             margin = FALSE,
+             par.settings = rasterTheme(region = blue2red(n = 20)),
+             narrows = 1000,
+             main = ll) +
+    layer(sp.polygons(map))
+  show(p)
+}
+
+
+
+NC <- open.nc("~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E_test.nc")
+print.nc(NC)
+U <- var.get.nc(NC, "U")
+V <- var.get.nc(NC, "V")
+
+wlon <- var.get.nc(NC, "Longitude")
+wlat <- var.get.nc(NC, "Latitude")
+
+levels <- dim(U)[1]
+
+for (ll in levels) {
+  u <- raster(t(U[, , ll])[ncol(U):ll, ])
+  v <- raster(t(V[, , ll])[ncol(V):ll, ])
+  ## stack layers
+  w <- brick(u, v)
+  ## apply geo coordinates
+  projection(w) <- CRS("EPSG:4326")
+  extent(w)     <- c(min(wlon), max(wlon), min(wlat), max(wlat))
+  slope         <- sqrt(w[[1]]^2 + w[[2]]^2)
+  p <- vectorplot(w * 10,
+                  isField = "dXY",
+                  region = slope,
+                  margin = FALSE,
+                  par.settings = rasterTheme(region = blue2red(n = 20)),
+                  narrows = 1000,
+                  main = ll) +
+    layer(sp.polygons(map))
+  show(p)
+}
+
+
+
 
 #' \FloatBarrier
 #+ results="asis", echo=FALSE
