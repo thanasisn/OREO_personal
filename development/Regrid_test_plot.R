@@ -235,19 +235,19 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
 
 afile    <- "~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E_test.nc"
 pressure <- 1000
-wind     <- ReadNetCDF(afile,
-                       subset = list(lev = pressure))
+wind     <- ReadNetCDF(afile)
+wind     <- wind[lev == 1]
 
 ## long lat are inverted!
-ggplot(wind, aes(lat, longitude, fill = Mag(u + v))) +
+ggplot(wind, aes(y = latitude, x = longitude, fill = Mag(u + v))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
           ylim   = range(wind$latitude),
-          colour = "gray90",
-          size   = .2) +
+          colour = "gray10",
+          size   = .4) +
   theme_bw() +
-  theme(panel.ontop = TRUE, panel.background = element_blank())+
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
   scale_fill_distiller(palette = "Spectral") +
   coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
                  ylim = c(cnf$D1$South, cnf$D1$North)) +
