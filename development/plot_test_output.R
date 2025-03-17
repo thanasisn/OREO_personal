@@ -276,6 +276,41 @@ for (ll in levels) {
 }
 
 
+## --------------------
+library(metR)
+library(data.table)
+library(ggplot2)
+
+
+
+wind <- ReadNetCDF("~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E.nc",
+           subset = list(latitude  = cnf$D1$North:cnf$D1$South,
+                         longitude = cnf$D1$East :cnf$D1$West,
+                         pressure_level = 1000))
+
+ggplot(wind, aes(longitude, latitude)) +
+  geom_contour_fill(aes(z = sqrt(u^2 + v^2))) +
+  geom_vector(aes(dx = u, dy = v),
+              skip = 1,
+              arrow.length = .1) +
+  coord_quickmap()
+
+ggplot(wind, aes(longitude, latitude, z = sqrt(u^2 + v^2))) +
+  geom_contour_fill(aes(z = Mag(u, v))) +
+  geom_vector(aes(
+    mag = Mag(u, v),
+    angle = Angle(u, v)),
+    arrow.length = 0.1) +
+  borders( colour = 'grey', fill = 'NA',) +
+  theme_bw() +
+  coord_map(xlim = c(cnf$D1$East, cnf$D1$West),
+            ylim = c(cnf$D1$North,cnf$D1$South) )
+
+
+ggplot(wind, aes(longitude, latitude)) +
+  geom_contour_fill(aes(z = sqrt(u^2 + v^2))) +
+  geom_streamline(aes(dx = u, dy = v))
+
 
 
 #' \FloatBarrier
