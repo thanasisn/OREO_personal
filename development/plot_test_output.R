@@ -282,34 +282,84 @@ library(data.table)
 library(ggplot2)
 
 
+afile <- "~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E.nc"
+pressure <- 1000
+wind <- ReadNetCDF(afile,
+                   subset = list(latitude  = cnf$D1$North:cnf$D1$South,
+                                 longitude = cnf$D1$East :cnf$D1$West,
+                                 pressure_level = pressure))
 
-wind <- ReadNetCDF("~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E.nc",
-           subset = list(latitude  = cnf$D1$North:cnf$D1$South,
-                         longitude = cnf$D1$East :cnf$D1$West,
-                         pressure_level = 1000))
-
-ggplot(wind, aes(longitude, latitude)) +
-  geom_contour_fill(aes(z = sqrt(u^2 + v^2))) +
-  geom_vector(aes(dx = u, dy = v),
-              skip = 1,
-              arrow.length = .1) +
-  coord_quickmap()
-
-ggplot(wind, aes(longitude, latitude, z = sqrt(u^2 + v^2))) +
-  geom_contour_fill(aes(z = Mag(u, v))) +
+ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders('world', xlim = range(wind$longitude), ylim=range(wind$latitude),
+          colour='gray90', size=.2) +
+  theme_bw() +
+  theme(panel.ontop=TRUE, panel.background=element_blank())+
+  scale_fill_distiller(palette='Spectral') +
+  coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
+                 ylim = c(cnf$D1$South,cnf$D1$North)) +
   geom_vector(aes(
     mag = Mag(u, v),
     angle = Angle(u, v)),
     arrow.length = 0.1) +
-  borders( colour = 'grey', fill = 'NA',) +
+  labs(title=basename(afile), subtitle=pressure,
+       x = "Longitude", y="Latitude",
+       fill = expression(m))
+
+afile <- "~/DATA/ERA5_domos_regrid/test_output/2020_DJF.nc"
+pressure <- 1000
+wind <- ReadNetCDF(afile,
+                   subset = list(lev = pressure))
+wind <- wind[Longitude >= cnf$D1$West  & Longitude <= cnf$D1$East]
+wind <- wind[Latitude  >= cnf$D1$South & Latitude  <= cnf$D1$North]
+
+ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + V))) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders('world', xlim = range(wind$Longitude), ylim=range(wind$Latitude),
+          colour='gray90', size=.2) +
   theme_bw() +
-  coord_map(xlim = c(cnf$D1$East, cnf$D1$West),
-            ylim = c(cnf$D1$North,cnf$D1$South) )
+  theme(panel.ontop=TRUE, panel.background=element_blank())+
+  scale_fill_distiller(palette='Spectral') +
+  coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
+                 ylim = c(cnf$D1$South,cnf$D1$North)) +
+  geom_vector(aes(
+    mag = Mag(U, V),
+    angle = Angle(U, V)),
+    arrow.length = 0.1) +
+  labs(title=basename(afile), subtitle=pressure,
+       x = "Longitude", y="Latitude",
+       fill = expression(m))
 
 
-ggplot(wind, aes(longitude, latitude)) +
-  geom_contour_fill(aes(z = sqrt(u^2 + v^2))) +
-  geom_streamline(aes(dx = u, dy = v))
+
+
+
+
+afile   <- "~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E_test.nc"
+pressure <- 1000
+wind <- ReadNetCDF(afile,
+                   subset = list(lev = pressure))
+
+## long lat are inverted!
+ggplot(wind, aes(Latitude, Longitude, fill = Mag(U + V))) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders('world', xlim = range(wind$Longitude), ylim=range(wind$Latitude),
+          colour='gray90', size=.2) +
+  theme_bw() +
+  theme(panel.ontop=TRUE, panel.background=element_blank())+
+  scale_fill_distiller(palette='Spectral') +
+  coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
+                 ylim = c(cnf$D1$South,cnf$D1$North)) +
+  geom_vector(aes(
+    mag = Mag(U, V),
+    angle = Angle(U, V)),
+    arrow.length = 0.1) +
+  labs(title=basename(afile), subtitle=pressure,
+       x = "Longitude", y="Latitude",
+       fill = expression(m))
+
+
+
 
 
 
