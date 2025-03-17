@@ -245,6 +245,37 @@ for (ll in levels) {
 }
 
 
+NC <- open.nc("~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E.nc")
+print.nc(NC)
+U <- var.get.nc(NC, "u")
+V <- var.get.nc(NC, "v")
+
+wlon <- var.get.nc(NC, "longitude")
+wlat <- var.get.nc(NC, "latitude")
+
+levels <- dim(U)[3]
+
+for (ll in levels) {
+  u <- raster(t(U[, , ll]))#[ncol(U):ll, ])
+  v <- raster(t(V[, , ll]))#[ncol(V):ll, ])
+  ## stack layers
+  w <- brick(u, v)
+  ## apply geo coordinates
+  projection(w) <- CRS("EPSG:4326")
+  extent(w)     <- c(min(wlon), max(wlon), min(wlat), max(wlat))
+  slope         <- sqrt(w[[1]]^2 + w[[2]]^2)
+  p <- vectorplot(w * 10,
+                  isField = "dXY",
+                  region = slope,
+                  margin = FALSE,
+                  par.settings = rasterTheme(region = blue2red(n = 20)),
+                  narrows = 1000,
+                  main = ll) +
+    layer(sp.polygons(map))
+  show(p)
+}
+
+
 
 
 #' \FloatBarrier
