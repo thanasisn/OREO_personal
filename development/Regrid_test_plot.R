@@ -105,25 +105,32 @@ wind <- ReadNetCDF(afile,
                    subset = list(latitude  = cnf$D1$North:cnf$D1$South,
                                  longitude = cnf$D1$East :cnf$D1$West,
                                  pressure_level = pressure))
-wind <- wind[valid_time =="2020-01-01"]
+wind <- wind[valid_time == "2020-01-01"]
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
   geom_tile(width = 0.25, height = 0.25) +
-  borders('world', xlim = range(wind$longitude), ylim=range(wind$latitude),
-          colour='gray90', size=.2) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray90",
+          size   = .2) +
   theme_bw() +
-  theme(panel.ontop=TRUE, panel.background=element_blank())+
-  scale_fill_distiller(palette='Spectral') +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
+  scale_fill_distiller(palette = "Spectral") +
   coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
                  ylim = c(cnf$D1$South,cnf$D1$North)) +
-  geom_vector(aes(
-    mag = Mag(u, v),
-    angle = Angle(u, v)),
-    skip = 10,
+  geom_vector(
+    aes(
+      mag   =   Mag(u, v),
+      angle = Angle(u, v)
+    ),
+    skip         = 10,
     arrow.length = 0.3) +
-  labs(title=basename(afile), subtitle=pressure,
-       x = "Longitude", y="Latitude",
-       fill = expression(m/s))
+  labs(title    = basename(afile),
+       subtitle = paste("Level", pressure),
+       x        = "Longitude",
+       y        = "Latitude",
+       fill     = expression(m/s))
 
 #'
 #' \newpage
@@ -133,29 +140,37 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
 
-afile <- "~/DATA/ERA5_domos_regrid/test_output/2020_DJF.nc"
+afile    <- "~/DATA/ERA5_domos_regrid/test_output/2020_DJF.nc"
 pressure <- 1000
-wind <- ReadNetCDF(afile,
-                   subset = list(lev = pressure))
+wind     <- ReadNetCDF(afile,
+                       subset = list(lev = pressure))
 wind <- wind[Longitude >= cnf$D1$West  & Longitude <= cnf$D1$East]
 wind <- wind[Latitude  >= cnf$D1$South & Latitude  <= cnf$D1$North]
 
 ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + V))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
-  borders('world', xlim = range(wind$Longitude), ylim=range(wind$Latitude),
-          colour='gray90', size=.2) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray90",
+          size   = .2) +
   theme_bw() +
   theme(panel.ontop=TRUE, panel.background=element_blank())+
-  scale_fill_distiller(palette='Spectral') +
+  scale_fill_distiller(palette="Spectral") +
   coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
                  ylim = c(cnf$D1$South,cnf$D1$North)) +
-  geom_vector(aes(
-    mag = Mag(U, V),
-    angle = Angle(U, V)),
+  geom_vector(
+    aes(
+      mag   =   Mag(u, v),
+      angle = Angle(u, v)
+    ),
+    skip         = 10,
     arrow.length = 0.3) +
-  labs(title=basename(afile), subtitle=pressure,
-       x = "Longitude", y="Latitude",
-       fill = expression(m/s))
+  labs(title    = basename(afile),
+       subtitle = paste("Level", pressure),
+       x        = "Longitude",
+       y        = "Latitude",
+       fill     = expression(m/s))
 
 
 
@@ -181,20 +196,28 @@ wind <- ReadNetCDF(afile,
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
-  borders('world', xlim = range(wind$longitude), ylim=range(wind$latitude),
-          colour='gray90', size=.2) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray90",
+          size   = .2) +
   theme_bw() +
   theme(panel.ontop=TRUE, panel.background=element_blank())+
-  scale_fill_distiller(palette='Spectral') +
+  scale_fill_distiller(palette="Spectral") +
   coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
                  ylim = c(cnf$D1$South,cnf$D1$North)) +
-  geom_vector(aes(
-    mag = Mag(u, v),
-    angle = Angle(u, v)),
+  geom_vector(
+    aes(
+      mag   =   Mag(u, v),
+      angle = Angle(u, v)
+    ),
+    skip         = 10,
     arrow.length = 0.3) +
-  labs(title=basename(afile), subtitle=pressure,
-       x = "Longitude", y="Latitude",
-       fill = expression(m/s))
+  labs(title    = basename(afile),
+       subtitle = paste("Level", pressure),
+       x        = "Longitude",
+       y        = "Latitude",
+       fill     = expression(m/s))
 
 
 
@@ -215,22 +238,30 @@ wind <- ReadNetCDF(afile,
                    subset = list(lev = pressure))
 
 ## long lat are inverted!
-ggplot(wind, aes(Latitude, Longitude, fill = Mag(U + V))) +
+ggplot(wind, aes(latitude, longitude, fill = Mag(u + v))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
-  borders('world', xlim = range(wind$Longitude), ylim=range(wind$Latitude),
-          colour='gray90', size=.2) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray90",
+          size   = .2) +
   theme_bw() +
-  theme(panel.ontop=TRUE, panel.background=element_blank())+
-  scale_fill_distiller(palette='Spectral') +
+  theme(panel.ontop = TRUE, panel.background = element_blank())+
+  scale_fill_distiller(palette="Spectral") +
   coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
                  ylim = c(cnf$D1$South,cnf$D1$North)) +
-  geom_vector(aes(
-    mag = Mag(U, V),
-    angle = Angle(U, V)),
+  geom_vector(
+    aes(
+      mag   =   Mag(u, v),
+      angle = Angle(u, v)
+    ),
+    skip         = 10,
     arrow.length = 0.3) +
-  labs(title=basename(afile), subtitle=pressure,
-       x = "Longitude", y="Latitude",
-       fill = expression(m))
+  labs(title    = basename(afile),
+       subtitle = paste("Level", pressure),
+       x        = "Longitude",
+       y        = "Latitude",
+       fill     = expression(m/s))
 
 
 
