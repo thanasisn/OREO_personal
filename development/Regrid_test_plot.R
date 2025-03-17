@@ -89,7 +89,8 @@ cnf_domus <- paste0("~/OREO/operation/run_profiles/", Sys.info()["nodename"], ".
 cnf <- read_yaml(cnf_domus)
 
 
-pander(t(cnf$D1))
+pander(t(cnf$D1), caption = cnf$D1$name)
+
 
 #'
 #' \newpage
@@ -194,7 +195,7 @@ wind     <- ReadNetCDF(afile,
                                  longitude = cnf$D1$East :cnf$D1$West,
                                  pressure_level = pressure))
 
-ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + U))) +
+ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -202,16 +203,16 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + U))) +
           colour = "gray10",
           size   = .4) +
   theme_bw() +
-  theme(panel.ontop=TRUE, panel.background = element_blank()) +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
   scale_fill_distiller(palette = "Spectral") +
-  coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
-                 ylim = c(cnf$D1$South,cnf$D1$North)) +
+  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
+                 ylim = c(cnf$D1$South, cnf$D1$North)) +
   geom_vector(
     aes(
       mag   =   Mag(u, v),
       angle = Angle(u, v)
     ),
-    skip         = 10,
+    skip         = 0,
     arrow.length = 0.3) +
   labs(title    = basename(afile),
        subtitle = paste("Level", pressure),
@@ -238,7 +239,7 @@ wind     <- ReadNetCDF(afile,
                        subset = list(lev = pressure))
 
 ## long lat are inverted!
-ggplot(wind, aes(latitude, longitude, fill = Mag(u + v))) +
+ggplot(wind, aes(lat, longitude, fill = Mag(u + v))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -255,7 +256,7 @@ ggplot(wind, aes(latitude, longitude, fill = Mag(u + v))) +
       mag   =   Mag(u, v),
       angle = Angle(u, v)
     ),
-    skip         = 10,
+    skip         = 0,
     arrow.length = 0.3) +
   labs(title    = basename(afile),
        subtitle = paste("Level", pressure),
