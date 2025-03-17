@@ -281,6 +281,32 @@ library(metR)
 library(data.table)
 library(ggplot2)
 
+afile <- "~/DATA/ERA5_domos_raw/ERA5_2020_44N24S-80W30E.nc"
+pressure <- 1000
+wind <- ReadNetCDF(afile,
+                   subset = list(latitude  = cnf$D1$North:cnf$D1$South,
+                                 longitude = cnf$D1$East :cnf$D1$West,
+                                 pressure_level = pressure))
+wind <- wind[valid_time =="2020-01-01"]
+
+ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders('world', xlim = range(wind$longitude), ylim=range(wind$latitude),
+          colour='gray90', size=.2) +
+  theme_bw() +
+  theme(panel.ontop=TRUE, panel.background=element_blank())+
+  scale_fill_distiller(palette='Spectral') +
+  coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
+                 ylim = c(cnf$D1$South,cnf$D1$North)) +
+  geom_vector(aes(
+    mag = Mag(u, v),
+    angle = Angle(u, v)),
+    arrow.length = 0.1) +
+  labs(title=basename(afile), subtitle=pressure,
+       x = "Longitude", y="Latitude",
+       fill = expression(m/s))
+
+
 
 afile <- "~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E.nc"
 pressure <- 1000
@@ -304,7 +330,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
     arrow.length = 0.1) +
   labs(title=basename(afile), subtitle=pressure,
        x = "Longitude", y="Latitude",
-       fill = expression(m))
+       fill = expression(m/s))
 
 afile <- "~/DATA/ERA5_domos_regrid/test_output/2020_DJF.nc"
 pressure <- 1000
@@ -328,7 +354,7 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + V))) +
     arrow.length = 0.1) +
   labs(title=basename(afile), subtitle=pressure,
        x = "Longitude", y="Latitude",
-       fill = expression(m))
+       fill = expression(m/s))
 
 
 
