@@ -137,7 +137,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
 #' \newpage
 #' \FloatBarrier
 #'
-#' # Regridded ERA5 data at 5x2 for Winter by Manolis
+#' # Regridded ERA5 data at 5x2 for Winter data by Manolis
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
 
@@ -184,7 +184,7 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + V))) +
 #' With xarray library. Very fast, maybe some limitation of the available stats for the most
 #' efficient approach.
 #'
-#' Specialized coarsing function.
+#' Specialized coarsening function.
 #' The cell doesn't include points of the next cell, so the  actual centres are at every (5 - 0.25) / 2 and (2 - 0.25) / 2
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
@@ -228,9 +228,9 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
 #' \newpage
 #' \FloatBarrier
 #'
-#' # Regridded ERA5 data at 5x2 for Winter
+#' # Regridded ERA5 data at 5x2 for Winter with original approach
 #'
-#' With numpy array computation. Slow, flexible computations.
+#' With numpy array computation. Slow, more flexible computations.
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
 
