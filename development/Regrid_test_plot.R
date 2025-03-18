@@ -179,10 +179,12 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + V))) +
 #' \newpage
 #' \FloatBarrier
 #'
-#' # Regridded ERA5 data at 5x2 for Winter
+#' # Regridded ERA5 data at 5x2 for Winter with xarray
 #'
-#' With xarray. Very fast, some limitation of the available stats.
+#' With xarray library. Very fast, maybe some limitation of the available stats for the most
+#' efficient approach.
 #'
+#' Specialized coarsing function.
 #' The cell doesn't include points of the next cell, so the  actual centres are at every (5 - 0.25) / 2 and (2 - 0.25) / 2
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
