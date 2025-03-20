@@ -72,7 +72,15 @@ library(lubridate,  warn.conflicts = FALSE, quietly = TRUE)
 library(pander,     warn.conflicts = FALSE, quietly = TRUE)
 library(ggplot2,    warn.conflicts = FALSE, quietly = TRUE)
 library(yaml,       warn.conflicts = FALSE, quietly = TRUE)
-library(metR,       warn.conflicts = FALSE, quietly = TRUE)
+library(colorRamps, warn.conflicts = FALSE, quietly = TRUE)
+library(RNetCDF,    warn.conflicts = FALSE, quietly = TRUE)
+library(ncdf4,      warn.conflicts = FALSE, quietly = TRUE)
+library(terra,      warn.conflicts = FALSE, quietly = TRUE)
+library(raster,     warn.conflicts = FALSE, quietly = TRUE)
+library(rasterVis,  warn.conflicts = FALSE, quietly = TRUE) # devtools::install_github("oscarperpinan/rastervis")
+library(metR)
+library(data.table)
+library(ggplot2)
 
 
 #+ include=T, echo=F, results="asis"
@@ -92,12 +100,12 @@ pander(t(cnf$D1), caption = cnf$D1$name)
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
 
-afile    <- "~/DATA/ERA5_domos_raw/ERA5_2020_44N24S-80W30E.nc"
+afile <- "~/DATA/ERA5_domos_raw/ERA5_2020_44N24S-80W30E.nc"
 pressure <- 1000
-wind     <- ReadNetCDF(afile,
-                       subset = list(latitude  = cnf$D1$North:cnf$D1$South,
-                                     longitude = cnf$D1$East :cnf$D1$West,
-                                     pressure_level = pressure))
+wind <- ReadNetCDF(afile,
+                   subset = list(latitude  = cnf$D1$North:cnf$D1$South,
+                                 longitude = cnf$D1$East :cnf$D1$West,
+                                 pressure_level = pressure))
 wind <- wind[valid_time == "2020-01-01"]
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
@@ -231,11 +239,38 @@ afile    <- "~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E_test.nc"
 pressure <- 1000
 wind     <- ReadNetCDF(afile)
 wind     <- wind[lev == 1]
-.
+
+## long lat are inverted!
+ggplot(wind, aes(y = latitude, x = longitude, fill = Mag(u + v))) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray10",
+          size   = .4) +
+  theme_bw() +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
+  scale_fill_distiller(palette = "Spectral") +
+  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
+                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  geom_vector(
+    aes(
+      mag   =   Mag(u, v),
+      angle = Angle(u, v)
+    ),
+    skip         = 0,
+    arrow.length = 0.3) +
+  labs(title    = basename(afile),
+       subtitle = paste("Level", pressure),
+       x        = "Longitude",
+       y        = "Latitude",
+       fill     = expression(m/s))
+
+
+
 
 
 
 #' \FloatBarrier
 #+ results="asis", echo=FALSE
 # goodbye()
-
