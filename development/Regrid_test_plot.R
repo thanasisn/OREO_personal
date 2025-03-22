@@ -92,6 +92,36 @@ cnf <- read_yaml(cnf_domus)
 pander(t(cnf$D1), caption = cnf$D1$name)
 
 
+monthly_files <- list.files(
+  path = paste0(cnf$ERA5$path_regrid,
+                "/Monthly_",
+                cnf$D1$LatStep, "x", cnf$D1$LonStep),
+  recursive  = T,
+  full.names = T)
+
+seasonal_files <- list.files(
+  path = paste0(cnf$ERA5$path_regrid,
+                "/Seasonal_",
+                cnf$D1$LatStep, "x", cnf$D1$LonStep),
+  recursive  = T,
+  full.names = T)
+
+raw_files <- list.files(
+  path = cnf$ERA5$path_raw,
+  full.names = T
+)
+
+
+aseas <- "Q1_DJF"
+ayear <- 2020
+
+fl_regrid <- grep(aseas, grep(ayear, seasonal_files, value = T), value = T)
+fl_raw    <- grep(ayear, raw_files, value = T)
+
+
+
+stop()
+
 #'
 #' \newpage
 #' \FloatBarrier
@@ -100,7 +130,7 @@ pander(t(cnf$D1), caption = cnf$D1$name)
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
 
-afile <- "~/DATA/ERA5_domos_raw/ERA5_2020_44N24S-80W30E.nc"
+afile    <- fl_raw
 pressure <- 1000
 wind <- ReadNetCDF(afile,
                    subset = list(latitude  = cnf$D1$North:cnf$D1$South,
@@ -129,7 +159,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
     arrow.length = 0.3) +
   labs(title    = basename(afile),
        subtitle = paste("Level", pressure),
-       x        = "Longitude",
+       x        = bquote(Latitude [~degree),
        y        = "Latitude",
        fill     = expression(m/s))
 
