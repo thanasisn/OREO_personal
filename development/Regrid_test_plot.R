@@ -22,7 +22,7 @@
 #'   bookdown::pdf_document2:
 #'     number_sections:  no
 #'     fig_caption:      no
-#'     keep_tex:         no
+#'     keep_tex:         yes
 #'     keep_md:          no
 #'     latex_engine:     xelatex
 #'     toc:              yes
@@ -40,7 +40,7 @@
 #+ include=F
 ## __ Document options  --------------------------------------------------------
 knitr::opts_chunk$set(comment   = ""      )
-knitr::opts_chunk$set(dev       = "pdf"   )
+knitr::opts_chunk$set(dev       = c("pdf", "png"))
 knitr::opts_chunk$set(out.width = "100%"  )
 knitr::opts_chunk$set(message   = FALSE   )
 knitr::opts_chunk$set(fig.align = "center")
@@ -118,7 +118,6 @@ fl_raw    <- grep(ayear, raw_files, value = T)
 
 
 
-stop()
 
 #'
 #' \newpage
@@ -136,9 +135,9 @@ wind <- ReadNetCDF(afile,
                                  pressure_level = pressure))
 wind <- wind[valid_time == "2020-01-01"]
 
-wind[Mag(u + v)]
 
-ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
+
+ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
   geom_tile(
     width  = 0.25,
     height = 0.25) +
@@ -151,7 +150,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
   theme(panel.ontop = TRUE, panel.background = element_blank()) +
   scale_fill_distiller(
     palette = "Spectral",
-    limits = c(0, NA))) +
+    limits  = c(0, wind[, max(Mag(u, v))])) +
   coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
                  ylim = c(cnf$D1$South,cnf$D1$North)) +
   geom_vector(
@@ -183,7 +182,7 @@ wind     <- ReadNetCDF(afile,
 wind <- wind[Longitude >= cnf$D1$West  & Longitude <= cnf$D1$East]
 wind <- wind[Latitude  >= cnf$D1$South & Latitude  <= cnf$D1$North]
 
-ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + V))) +
+ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$Longitude),
@@ -192,7 +191,9 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + V))) +
           size   = .4) +
   theme_bw() +
   theme(panel.ontop = TRUE, panel.background = element_blank()) +
-  scale_fill_distiller(palette = "Spectral") +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits  = c(0, wind[, max(Mag(U, V))])) +
   coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
                  ylim = c(cnf$D1$South,cnf$D1$North)) +
   geom_vector(
@@ -204,60 +205,14 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U + V))) +
     arrow.length = 0.3) +
   labs(title    = basename(afile),
        subtitle = paste("Level", pressure),
-       x        = "Longitude",
-       y        = "Latitude",
+       x        = expression(Latitude  ~ group("[",degree,"]")),
+       y        = expression(Longitude ~ group("[",degree,"]")),
        fill     = expression(m/s))
 
 
 
-#'
-#' \newpage
-#' \FloatBarrier
-#'
-#' # Regridded ERA5 data at 5x2 for Winter with xarray
-#'
-#' With xarray library. Very fast, maybe some limitation of the available stats for the most
-#' efficient approach.
-#'
-#' Specialized coarsening function.
-#' The cell doesn't include points of the next cell, so the  actual centres are at every (5 - 0.25) / 2 and (2 - 0.25) / 2
-#'
-#+ include=T, echo=F, warning=FALSE, out.width="100%"
-
-
-afile    <- "~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E.nc"
-pressure <- 1000
-wind     <- ReadNetCDF(afile,
-                   subset = list(latitude  = cnf$D1$North:cnf$D1$South,
-                                 longitude = cnf$D1$East :cnf$D1$West,
-                                 pressure_level = pressure))
-
-ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
-  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
-  borders("world",
-          xlim   = range(wind$longitude),
-          ylim   = range(wind$latitude),
-          colour = "gray10",
-          size   = .4) +
-  theme_bw() +
-  theme(panel.ontop = TRUE, panel.background = element_blank()) +
-  scale_fill_distiller(palette = "Spectral") +
-  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
-                 ylim = c(cnf$D1$South, cnf$D1$North)) +
-  geom_vector(
-    aes(
-      mag   =   Mag(u, v),
-      angle = Angle(u, v)
-    ),
-    skip         = 0,
-    arrow.length = 0.3) +
-  labs(title    = basename(afile),
-       subtitle = paste("Level", pressure),
-       x        = "Longitude",
-       y        = "Latitude",
-       fill     = expression(m/s))
-
-
+afile    <- fl_regrid
+level    <- 1
 
 #'
 #' \newpage
@@ -265,18 +220,18 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
 #'
 #' # Regridded ERA5 data at 5x2 for Winter with original approach
 #'
-#' With numpy array computation. Slow, more flexible computations.
+#' **File: `r basename(afile)`**
+#'
+#' **Level: `r level`**
+#'
+#' ## Mean of components
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
 
-
-afile    <- "~/DATA/ERA5_domos_regrid/ERA5_2020_Q1_DJF_42N25S-80W25E_test.nc"
-pressure <- 1000
 wind     <- ReadNetCDF(afile)
-wind     <- wind[lev == 1]
+wind     <- wind[pressure_level == level]
 
-## long lat are inverted!
-ggplot(wind, aes(y = latitude, x = longitude, fill = Mag(u + v))) +
+ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -285,23 +240,58 @@ ggplot(wind, aes(y = latitude, x = longitude, fill = Mag(u + v))) +
           size   = .4) +
   theme_bw() +
   theme(panel.ontop = TRUE, panel.background = element_blank()) +
-  scale_fill_distiller(palette = "Spectral") +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits  = c(0, wind[, max(Mag(u_mean, v_mean))])) +
   coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
                  ylim = c(cnf$D1$South, cnf$D1$North)) +
   geom_vector(
     aes(
-      mag   =   Mag(u, v),
-      angle = Angle(u, v)
+      mag   =   Mag(u_mean, v_mean),
+      angle = Angle(u_mean, v_mean)
     ),
     skip         = 0,
-    arrow.length = 0.3) +
-  labs(title    = basename(afile),
-       subtitle = paste("Level", pressure),
-       x        = "Longitude",
-       y        = "Latitude",
-       fill     = expression(m/s))
+    arrow.length = 0.3,
+    show.legend  = F) +
+  labs(
+    x        = expression(Latitude  ~ group("[",degree,"]")),
+    y        = expression(Longitude ~ group("[",degree,"]")),
+    fill     = expression(m/s)
+  )
 
 
+#'
+#' ## Median of components
+#'
+#+ include=T, echo=F, warning=FALSE, out.width="100%"
+
+ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray10",
+          size   = .4) +
+  theme_bw() +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits  = c(0, wind[, max(Mag(u_median, v_median))])) +
+  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
+                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  geom_vector(
+    aes(
+      mag   =   Mag(u_median, v_median),
+      angle = Angle(u_median, v_median)
+    ),
+    skip         = 0,
+    arrow.length = 0.3,
+    show.legend  = F) +
+  labs(
+    x        = expression(Latitude  ~ group("[",degree,"]")),
+    y        = expression(Longitude ~ group("[",degree,"]")),
+    fill     = expression(m/s)
+  )
 
 
 
