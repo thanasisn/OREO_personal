@@ -1,14 +1,14 @@
 # /* #!/usr/bin/env Rscript */
 # /* Copyright (C) 2025 Athanasios Natsis <natsisphysicist@gmail.com> */
 #' ---
-#' title:         "Regrid test plots"
+#' title:         "ERA5 regrid test plots"
 #' author:        "Natsis Athanasios"
 #' institute:     "AUTH"
 #' affiliation:   "Laboratory of Atmospheric Physics"
 #' documentclass: article
-#' classoption:   a4paper,oneside,landscape
+#' classoption:   a4paper,oneside
 #' fontsize:      10pt
-#' geometry:      "left=0.5in,right=0.5in,top=0.5in,bottom=0.5in"
+#' geometry:      "left=20mm,right=20mm,top=20mm,bottom=20mm"
 #'
 #' link-citations:  yes
 #' colorlinks:      yes
@@ -73,12 +73,12 @@ library(pander,     warn.conflicts = FALSE, quietly = TRUE)
 library(ggplot2,    warn.conflicts = FALSE, quietly = TRUE)
 library(yaml,       warn.conflicts = FALSE, quietly = TRUE)
 library(colorRamps, warn.conflicts = FALSE, quietly = TRUE)
-library(RNetCDF,    warn.conflicts = FALSE, quietly = TRUE)
-library(ncdf4,      warn.conflicts = FALSE, quietly = TRUE)
+# library(RNetCDF,    warn.conflicts = FALSE, quietly = TRUE)
+# library(ncdf4,      warn.conflicts = FALSE, quietly = TRUE)
 library(terra,      warn.conflicts = FALSE, quietly = TRUE)
-library(raster,     warn.conflicts = FALSE, quietly = TRUE)
-library(rasterVis,  warn.conflicts = FALSE, quietly = TRUE) # devtools::install_github("oscarperpinan/rastervis")
-library(metR,     warn.conflicts = FALSE, quietly = TRUE)
+# library(raster,     warn.conflicts = FALSE, quietly = TRUE)
+# library(rasterVis,  warn.conflicts = FALSE, quietly = TRUE) # devtools::install_github("oscarperpinan/rastervis")
+library(metR,       warn.conflicts = FALSE, quietly = TRUE)
 
 
 #+ include=T, echo=F, results="asis"
@@ -112,20 +112,28 @@ raw_files <- list.files(
 
 aseas <- "Q1_DJF"
 ayear <- 2020
+amont <- "M01"
 
-fl_regrid <- grep(aseas, grep(ayear, seasonal_files, value = T), value = T)
-fl_raw    <- grep(ayear, raw_files, value = T)
+fl_regrid_ses <- grep(aseas, grep(ayear, seasonal_files, value = T), value = T)
+fl_regrid_mon <- grep(amont, grep(ayear, monthly_files,  value = T), value = T)
+fl_raw        <- grep(ayear, raw_files, value = T)
 
 
 
+afile    <- fl_raw
+pressure <- 1000
 
 #'
 #' \newpage
 #' \FloatBarrier
 #'
-#' # Raw ERA5 data at 0.25x0.25 for January
+#' # Raw ERA5 data at 0.25x0.25 for `r ayear`
 #'
-#+ include=T, echo=F, warning=FALSE, out.width="100%"
+#' **File: `r basename(afile)`**
+#'
+#' **Pressure: `r pressure`**
+#'
+#+ era5-raw, include=T, echo=F, warning=FALSE
 
 afile    <- fl_raw
 pressure <- 1000
@@ -160,20 +168,21 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
     ),
     skip         = 10,
     arrow.length = 0.3) +
-  labs(title    = basename(afile),
-       subtitle = paste("Level", pressure),
-       x        = expression(Latitude  ~ group("[",degree,"]")),
-       y        = expression(Longitude ~ group("[",degree,"]")),
-       fill     = expression(m/s))
+  labs(
+    # title    = basename(afile),
+    # subtitle = paste("Level", pressure),
+    x        = expression(Latitude  ~ group("[",degree,"]")),
+    y        = expression(Longitude ~ group("[",degree,"]")),
+    fill     = expression(m/s)
+  )
 
 
 #'
-#' \newpage
 #' \FloatBarrier
 #'
 #' # Regridded ERA5 data at 5x2 for Winter data by Manolis
 #'
-#+ include=T, echo=F, warning=FALSE, out.width="100%"
+#+ era5-regrid-manolis, include=T, echo=F, warning=FALSE
 
 afile    <- "~/DATA/ERA5_domos_regrid/test_output/2020_DJF.nc"
 pressure <- 1000
@@ -203,22 +212,23 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
     ),
     skip         = 0,
     arrow.length = 0.3) +
-  labs(title    = basename(afile),
-       subtitle = paste("Level", pressure),
-       x        = expression(Latitude  ~ group("[",degree,"]")),
-       y        = expression(Longitude ~ group("[",degree,"]")),
-       fill     = expression(m/s))
+  labs(
+    # title    = basename(afile),
+    # subtitle = paste("Level", pressure),
+    x        = expression(Latitude  ~ group("[",degree,"]")),
+    y        = expression(Longitude ~ group("[",degree,"]")),
+    fill     = expression(m/s)
+  )
 
 
 
-afile    <- fl_regrid
+afile    <- fl_regrid_ses
 level    <- 1
 
 #'
-#' \newpage
 #' \FloatBarrier
 #'
-#' # Regridded ERA5 data at 5x2 for Winter with original approach
+#' # Seasonal regridded ERA5 data at `r paste0(cnf$D1$LatStep, "x", cnf$D1$LonStep)` for `r ayear`, `r aseas`
 #'
 #' **File: `r basename(afile)`**
 #'
@@ -226,7 +236,7 @@ level    <- 1
 #'
 #' ## Mean of components
 #'
-#+ include=T, echo=F, warning=FALSE, out.width="100%"
+#+ era5-regrid-mean-seas, include=T, echo=F, warning=FALSE, out.width="100%"
 
 wind     <- ReadNetCDF(afile)
 wind     <- wind[pressure_level == level]
@@ -263,7 +273,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
 #'
 #' ## Median of components
 #'
-#+ include=T, echo=F, warning=FALSE, out.width="100%"
+#+ era5-regrid-median-seas, include=T, echo=F, warning=FALSE, out.width="100%"
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
@@ -292,6 +302,98 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
     y        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
+
+
+
+
+afile <- fl_regrid_mon
+level <- 1
+MM    <- as.numeric(sub("M", "", amont))
+
+
+
+#'
+#' \FloatBarrier
+#'
+#' # Monthly regridded ERA5 data at `r paste0(cnf$D1$LatStep, "x", cnf$D1$LonStep)` for `r ayear`, `r month.name[MM]`
+#'
+#' **File: `r basename(afile)`**
+#'
+#' **Level: `r level`**
+#'
+#' **Month: `r MM`**
+#'
+#' ## Mean of components
+#'
+#+ era5-regrid-mean-month, include=T, echo=F, warning=FALSE, out.width="100%"
+
+wind     <- ReadNetCDF(afile)
+wind     <- wind[pressure_level == level]
+
+ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray10",
+          size   = .4) +
+  theme_bw() +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits  = c(0, wind[, max(Mag(u_mean, v_mean))])) +
+  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
+                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  geom_vector(
+    aes(
+      mag   =   Mag(u_mean, v_mean),
+      angle = Angle(u_mean, v_mean)
+    ),
+    skip         = 0,
+    arrow.length = 0.3,
+    show.legend  = F) +
+  labs(
+    x        = expression(Latitude  ~ group("[",degree,"]")),
+    y        = expression(Longitude ~ group("[",degree,"]")),
+    fill     = expression(m/s)
+  )
+
+
+#'
+#' ## Median of components
+#'
+#+ era5-regrid-median-month, include=T, echo=F, warning=FALSE, out.width="100%"
+
+ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray10",
+          size   = .4) +
+  theme_bw() +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits  = c(0, wind[, max(Mag(u_median, v_median))])) +
+  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
+                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  geom_vector(
+    aes(
+      mag   =   Mag(u_median, v_median),
+      angle = Angle(u_median, v_median)
+    ),
+    skip         = 0,
+    arrow.length = 0.3,
+    show.legend  = F) +
+  labs(
+    x        = expression(Latitude  ~ group("[",degree,"]")),
+    y        = expression(Longitude ~ group("[",degree,"]")),
+    fill     = expression(m/s)
+  )
+
+
+
 
 
 
