@@ -78,9 +78,7 @@ library(ncdf4,      warn.conflicts = FALSE, quietly = TRUE)
 library(terra,      warn.conflicts = FALSE, quietly = TRUE)
 library(raster,     warn.conflicts = FALSE, quietly = TRUE)
 library(rasterVis,  warn.conflicts = FALSE, quietly = TRUE) # devtools::install_github("oscarperpinan/rastervis")
-library(metR)
-library(data.table)
-library(ggplot2)
+library(metR,     warn.conflicts = FALSE, quietly = TRUE)
 
 
 #+ include=T, echo=F, results="asis"
@@ -138,8 +136,12 @@ wind <- ReadNetCDF(afile,
                                  pressure_level = pressure))
 wind <- wind[valid_time == "2020-01-01"]
 
+wind[Mag(u + v)]
+
 ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
-  geom_tile(width = 0.25, height = 0.25) +
+  geom_tile(
+    width  = 0.25,
+    height = 0.25) +
   borders("world",
           xlim   = range(wind$longitude),
           ylim   = range(wind$latitude),
@@ -147,7 +149,9 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
           size   = .4) +
   theme_bw() +
   theme(panel.ontop = TRUE, panel.background = element_blank()) +
-  scale_fill_distiller(palette = "Spectral") +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits = c(0, NA))) +
   coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
                  ylim = c(cnf$D1$South,cnf$D1$North)) +
   geom_vector(
@@ -159,9 +163,10 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u + v))) +
     arrow.length = 0.3) +
   labs(title    = basename(afile),
        subtitle = paste("Level", pressure),
-       x        = bquote(Latitude [~degree),
-       y        = "Latitude",
+       x        = expression(Latitude  ~ group("[",degree,"]")),
+       y        = expression(Longitude ~ group("[",degree,"]")),
        fill     = expression(m/s))
+
 
 #'
 #' \newpage
