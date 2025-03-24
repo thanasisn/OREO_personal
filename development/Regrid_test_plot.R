@@ -244,7 +244,6 @@ level    <- 1
 #+ era5-regrid-mean-seas, include=T, echo=F, warning=FALSE, out.width="100%"
 
 wind     <- ReadNetCDF(afile)
-# wind[longitude == -77.5 & latitude == 43]
 wind     <- wind[pressure_level == level]
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
