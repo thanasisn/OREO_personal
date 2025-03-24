@@ -109,7 +109,7 @@ raw_files <- list.files(
   full.names = T
 )
 
-
+##  Choose inputs  -------------------------------------------------------------
 aseas <- "Q1_DJF"
 ayear <- 2020
 amont <- "M01"
@@ -120,6 +120,7 @@ fl_raw        <- grep(ayear, raw_files, value = T)
 
 
 
+##  Raw ERA5 data  -------------------------------------------------------------
 afile    <- fl_raw
 pressure <- 1000
 
@@ -177,6 +178,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
   )
 
 
+##  Manolis regridded ERA5 data  -----------------------------------------------
+
 #'
 #' \FloatBarrier
 #'
@@ -221,10 +224,12 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
   )
 
 
+##  Thanasis regridded ERA5 data  ----------------------------------------------
 
 afile    <- fl_regrid_ses
 level    <- 1
 
+## __ Mean seasonal ERA5 data  -------------------------------------------------
 #'
 #' \FloatBarrier
 #'
@@ -270,6 +275,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   )
 
 
+## __ Median seasonal ERA5 data  -----------------------------------------------
 #'
 #' ## Median of components
 #'
@@ -310,8 +316,6 @@ afile <- fl_regrid_mon
 level <- 1
 MM    <- as.numeric(sub("M", "", amont))
 
-
-
 #'
 #' \FloatBarrier
 #'
@@ -322,6 +326,11 @@ MM    <- as.numeric(sub("M", "", amont))
 #' **Level: `r level`**
 #'
 #' **Month: `r MM`**
+#+ include=T, echo=F, warning=FALSE, out.width="100%"
+
+
+## __ Mean monthly ERA5 data  --------------------------------------------------
+
 #'
 #' ## Mean of components
 #'
@@ -359,6 +368,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   )
 
 
+## __ Median monthly ERA5 data  ------------------------------------------------
+
 #'
 #' ## Median of components
 #'
@@ -395,6 +406,58 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
 
 
 
+
+## __ Height monthly ERA5 data  ------------------------------------------------
+
+#'
+#' ## Height monthly data on level `r level`
+#'
+#+ era5-regrid-height-month, include=T, echo=F, warning=FALSE, out.width="100%"
+
+wind     <- ReadNetCDF(afile)
+wind     <- wind[pressure_level == level]
+
+ggplot(wind, aes(longitude, latitude, fill = height)) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray10",
+          size   = .4) +
+  theme_bw() +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits  = c(0, NA)) +
+  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
+                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  # geom_vector(
+  #   aes(
+  #     mag   =   Mag(u_mean, v_mean),
+  #     angle = Angle(u_mean, v_mean)
+  #   ),
+  #   skip         = 0,
+  #   arrow.length = 0.3,
+  #   show.legend  = F) +
+  labs(
+    x        = expression(Latitude  ~ group("[", degree, "]")),
+    y        = expression(Longitude ~ group("[", degree, "]")),
+    fill     = "m.a.s.l"
+  )
+
+
+
+#'
+#' ## Domain specs
+#'
+#+ include=T, echo=F, warning=FALSE, out.width="100%"
+
+cat("Longitudes:")
+sort(unique(wind$longitude))
+
+
+cat("Latitudes:")
+sort(unique(wind$latitude))
 
 
 
