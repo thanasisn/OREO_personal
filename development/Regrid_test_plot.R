@@ -145,7 +145,6 @@ wind     <- ReadNetCDF(afile,
 wind <- wind[valid_time == "2020-01-01"]
 
 
-
 ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
   geom_tile(
     width  = 0.25,
@@ -172,8 +171,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
   labs(
     # title    = basename(afile),
     # subtitle = paste("Level", pressure),
-    x        = expression(Latitude  ~ group("[",degree,"]")),
-    y        = expression(Longitude ~ group("[",degree,"]")),
+    y        = expression(Latitude  ~ group("[",degree,"]")),
+    x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
 
@@ -214,12 +213,13 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
       angle = Angle(U, V)
     ),
     skip         = 0,
-    arrow.length = 0.3) +
+    arrow.length = 0.3,
+    show.legend  = F) +
   labs(
     # title    = basename(afile),
     # subtitle = paste("Level", pressure),
-    x        = expression(Latitude  ~ group("[",degree,"]")),
-    y        = expression(Longitude ~ group("[",degree,"]")),
+    y        = expression(Latitude  ~ group("[",degree,"]")),
+    x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
 
@@ -278,8 +278,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
     arrow.length = 0.3,
     show.legend  = F) +
   labs(
-    x        = expression(Latitude  ~ group("[",degree,"]")),
-    y        = expression(Longitude ~ group("[",degree,"]")),
+    y        = expression(Latitude  ~ group("[",degree,"]")),
+    x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
 
@@ -313,8 +313,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
     arrow.length = 0.3,
     show.legend  = F) +
   labs(
-    x        = expression(Latitude  ~ group("[",degree,"]")),
-    y        = expression(Longitude ~ group("[",degree,"]")),
+    y        = expression(Latitude  ~ group("[",degree,"]")),
+    x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
 
@@ -371,8 +371,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
     arrow.length = 0.3,
     show.legend  = F) +
   labs(
-    x        = expression(Latitude  ~ group("[",degree,"]")),
-    y        = expression(Longitude ~ group("[",degree,"]")),
+    y        = expression(Latitude  ~ group("[",degree,"]")),
+    x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
 
@@ -407,8 +407,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
     arrow.length = 0.3,
     show.legend  = F) +
   labs(
-    x        = expression(Latitude  ~ group("[",degree,"]")),
-    y        = expression(Longitude ~ group("[",degree,"]")),
+    y        = expression(Latitude  ~ group("[",degree,"]")),
+    x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
 
@@ -449,8 +449,8 @@ ggplot(wind, aes(longitude, latitude, fill = height)) +
   #   arrow.length = 0.3,
   #   show.legend  = F) +
   labs(
-    x        = expression(Latitude  ~ group("[", degree, "]")),
-    y        = expression(Longitude ~ group("[", degree, "]")),
+    y        = expression(Latitude  ~ group("[", degree, "]")),
+    x        = expression(Longitude ~ group("[", degree, "]")),
     fill     = "m.a.s.l"
   )
 
