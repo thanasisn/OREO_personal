@@ -138,10 +138,10 @@ pressure <- 1000
 
 afile    <- fl_raw
 pressure <- 1000
-wind <- ReadNetCDF(afile,
-                   subset = list(latitude  = cnf$D1$North:cnf$D1$South,
-                                 longitude = cnf$D1$East :cnf$D1$West,
-                                 pressure_level = pressure))
+wind     <- ReadNetCDF(afile,
+                       subset = list(latitude  = cnf$D1$North:cnf$D1$South,
+                                     longitude = cnf$D1$East :cnf$D1$West,
+                                     pressure_level = pressure))
 wind <- wind[valid_time == "2020-01-01"]
 
 
@@ -222,6 +222,14 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
     y        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
+
+cat("Longitudes:")
+sort(unique(wind$Longitude))
+
+
+cat("Latitudes:")
+sort(unique(wind$Latitude))
+
 
 
 ##  Thanasis regridded ERA5 data  ----------------------------------------------
