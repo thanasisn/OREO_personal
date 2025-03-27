@@ -73,11 +73,7 @@ library(pander,     warn.conflicts = FALSE, quietly = TRUE)
 library(ggplot2,    warn.conflicts = FALSE, quietly = TRUE)
 library(yaml,       warn.conflicts = FALSE, quietly = TRUE)
 library(colorRamps, warn.conflicts = FALSE, quietly = TRUE)
-# library(RNetCDF,    warn.conflicts = FALSE, quietly = TRUE)
-# library(ncdf4,      warn.conflicts = FALSE, quietly = TRUE)
 library(terra,      warn.conflicts = FALSE, quietly = TRUE)
-# library(raster,     warn.conflicts = FALSE, quietly = TRUE)
-# library(rasterVis,  warn.conflicts = FALSE, quietly = TRUE) # devtools::install_github("oscarperpinan/rastervis")
 library(metR,       warn.conflicts = FALSE, quietly = TRUE)
 
 
