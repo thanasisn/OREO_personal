@@ -78,9 +78,9 @@ library(metR,       warn.conflicts = FALSE, quietly = TRUE)
 
 
 #+ include=T, echo=F, results="asis"
-##  Open dataset  --------------------------------------------------------------
+##  Read config  ---------------------------------------------------------------
 cnf_domus <- paste0("~/OREO/operation/run_profiles/", Sys.info()["nodename"], ".yaml")
-cnf <- read_yaml(cnf_domus)
+cnf       <- read_yaml(cnf_domus)
 
 
 pander(t(cnf$D1), caption = cnf$D1$name)
@@ -467,7 +467,6 @@ ggplot(wind, aes(longitude, latitude, fill = height)) +
 #' ## Domain specs
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
-afile
 
 cat("Longitudes:")
 sort(unique(wind$longitude))
