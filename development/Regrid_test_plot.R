@@ -139,7 +139,8 @@ wind     <- ReadNetCDF(afile,
                                      longitude = cnf$D1$East :cnf$D1$West,
                                      pressure_level = pressure))
 wind <- wind[valid_time == "2020-01-01"]
-
+range(wind$latitude)
+range(wind$longitude)
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
   geom_tile(
@@ -250,6 +251,8 @@ level    <- 1
 wind     <- ReadNetCDF(afile)
 # wind[longitude == -77.5 & latitude == 43]
 wind     <- wind[pressure_level == level]
+range(wind$longitude)
+range(wind$latitude)
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
@@ -337,6 +340,8 @@ MM    <- as.numeric(sub("M", "", amont))
 ## __ Mean monthly ERA5 data  --------------------------------------------------
 
 #'
+#' \FloatBarrier
+#'
 #' ## Mean of components
 #'
 #+ era5-regrid-mean-month, include=T, echo=F, warning=FALSE, out.width="100%"
@@ -375,6 +380,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
 
 ## __ Median monthly ERA5 data  ------------------------------------------------
 
+#'
+#' \FloatBarrier
 #'
 #' ## Median of components
 #'
@@ -415,6 +422,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
 ## __ Height monthly ERA5 data  ------------------------------------------------
 
 #'
+#' \FloatBarrier
+#'
 #' ## Height monthly data on level `r level`
 #'
 #+ era5-regrid-height-month, include=T, echo=F, warning=FALSE, out.width="100%"
@@ -447,15 +456,18 @@ ggplot(wind, aes(longitude, latitude, fill = height)) +
   labs(
     y        = expression(Latitude  ~ group("[", degree, "]")),
     x        = expression(Longitude ~ group("[", degree, "]")),
-    fill     = "m.a.s.l"
+    fill     = "km.a.s.l"
   )
 
 
 
 #'
+#' \FloatBarrier
+#'
 #' ## Domain specs
 #'
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
+afile
 
 cat("Longitudes:")
 sort(unique(wind$longitude))
@@ -463,6 +475,18 @@ sort(unique(wind$longitude))
 
 cat("Latitudes:")
 sort(unique(wind$latitude))
+
+#'
+#' \FloatBarrier
+#'
+#' ## Height boundary example
+#'
+#+ include=T, echo=T, warning=FALSE, out.width="100%"
+
+wind     <- ReadNetCDF(afile)
+pp <- wind[longitude == min(longitude) & latitude == min(latitude)] |> select(starts_with("heig"))
+
+pander(pp)
 
 
 
