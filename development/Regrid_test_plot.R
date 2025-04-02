@@ -114,7 +114,10 @@ fl_regrid_ses <- grep(aseas, grep(ayear, seasonal_files, value = T), value = T)
 fl_regrid_mon <- grep(amont, grep(ayear, monthly_files,  value = T), value = T)
 fl_raw        <- grep(ayear, raw_files, value = T)
 
-
+P_North <- cnf$D1$North + cnf$D1$LatStep * 2
+P_South <- cnf$D1$South - cnf$D1$LatStep
+P_East  <- cnf$D1$East  + cnf$D1$LonStep
+P_West  <- cnf$D1$West  - cnf$D1$LonStep
 
 ##  Raw ERA5 data  -------------------------------------------------------------
 afile    <- fl_raw
@@ -135,8 +138,8 @@ pressure <- 1000
 afile    <- fl_raw
 pressure <- 1000
 wind     <- ReadNetCDF(afile,
-                       subset = list(latitude  = cnf$D1$North:cnf$D1$South,
-                                     longitude = cnf$D1$East :cnf$D1$West,
+                       subset = list(latitude  = P_North:P_South,
+                                     longitude = P_East :P_West,
                                      pressure_level = pressure))
 wind <- wind[valid_time == "2020-01-01"]
 range(wind$latitude)
@@ -156,8 +159,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
   scale_fill_distiller(
     palette = "Spectral",
     limits  = c(0, wind[, max(Mag(u, v))])) +
-  coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
-                 ylim = c(cnf$D1$South,cnf$D1$North)) +
+  coord_quickmap(xlim = c(P_West,  P_East),
+                 ylim = c(P_South, P_North)) +
   geom_vector(
     aes(
       mag   =   Mag(u, v),
@@ -187,11 +190,11 @@ afile    <- "~/DATA/ERA5_domos_regrid/test_output/2020_DJF.nc"
 pressure <- 1000
 wind     <- ReadNetCDF(afile,
                        subset = list(lev = pressure))
-wind <- wind[Longitude >= cnf$D1$West  & Longitude <= cnf$D1$East]
-wind <- wind[Latitude  >= cnf$D1$South & Latitude  <= cnf$D1$North]
+wind <- wind[Longitude >= P_West  & Longitude <= P_East]
+wind <- wind[Latitude  >= P_South & Latitude  <= P_North]
 
 ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
-  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  geom_tile(width = 5, height = 2) +
   borders("world",
           xlim   = range(wind$Longitude),
           ylim   = range(wind$Latitude),
@@ -202,8 +205,8 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
   scale_fill_distiller(
     palette = "Spectral",
     limits  = c(0, wind[, max(Mag(U, V))])) +
-  coord_quickmap(xlim = c(cnf$D1$West, cnf$D1$East),
-                 ylim = c(cnf$D1$South,cnf$D1$North)) +
+  coord_quickmap(xlim = c(P_West, P_East),
+                 ylim = c(P_South,P_North)) +
   geom_vector(
     aes(
       mag   =   Mag(U, V),
@@ -234,6 +237,10 @@ sort(unique(wind$Latitude))
 afile    <- fl_regrid_ses
 level    <- 1
 
+wind     <- ReadNetCDF(afile)
+wind     <- wind[pressure_level == level]
+
+
 ## __ Mean seasonal ERA5 data  -------------------------------------------------
 #'
 #' \FloatBarrier
@@ -246,15 +253,13 @@ level    <- 1
 #'
 #' ## Mean of components
 #'
-#+ era5-regrid-mean-seas, include=T, echo=F, warning=FALSE, out.width="100%"
+#+ era5-regrid-mean-seas, include=T, echo=F, warning=FALSE, out.width="100%", results='asis'
 
-wind     <- ReadNetCDF(afile)
-# wind[longitude == -77.5 & latitude == 43]
-wind     <- wind[pressure_level == level]
-range(wind$longitude)
-range(wind$latitude)
-unique(wind$v_N)
-unique(wind$u_N)
+cat("Longitude range:", range(wind$longitude), "\n")
+
+cat("\nLatitude range:", range(wind$latitude), "\n")
+
+cat("\nCell N points:", unique(wind$v_N), unique(wind$u_N), "\n")
 
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
@@ -269,8 +274,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   scale_fill_distiller(
     palette = "Spectral",
     limits  = c(0, wind[, max(Mag(u_mean, v_mean))])) +
-  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
-                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  coord_quickmap(xlim = c(P_West,  P_East),
+                 ylim = c(P_South, P_North)) +
   geom_vector(
     aes(
       mag   =   Mag(u_mean, v_mean),
@@ -304,8 +309,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
   scale_fill_distiller(
     palette = "Spectral",
     limits  = c(0, wind[, max(Mag(u_median, v_median))])) +
-  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
-                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  coord_quickmap(xlim = c(P_West,  P_East),
+                 ylim = c(P_South, P_North)) +
   geom_vector(
     aes(
       mag   =   Mag(u_median, v_median),
@@ -347,10 +352,18 @@ MM    <- as.numeric(sub("M", "", amont))
 #'
 #' ## Mean of components
 #'
-#+ era5-regrid-mean-month, include=T, echo=F, warning=FALSE, out.width="100%"
+#+ era5-regrid-mean-month, include=T, echo=F, warning=FALSE, out.width="100%", results='asis'
 
 wind     <- ReadNetCDF(afile)
 wind     <- wind[pressure_level == level]
+
+cat("Longitude range:", range(wind$longitude), "\n")
+
+cat("\nLatitude range:", range(wind$latitude), "\n")
+
+cat("\nCell N points:", unique(wind$v_N), unique(wind$u_N), "\n")
+
+
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
@@ -364,8 +377,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   scale_fill_distiller(
     palette = "Spectral",
     limits  = c(0, wind[, max(Mag(u_mean, v_mean))])) +
-  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
-                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  coord_quickmap(xlim = c(P_West,  P_East),
+                 ylim = c(P_South, P_North)) +
   geom_vector(
     aes(
       mag   =   Mag(u_mean, v_mean),
@@ -390,6 +403,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
 #'
 #+ era5-regrid-median-month, include=T, echo=F, warning=FALSE, out.width="100%"
 
+
+
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
@@ -402,8 +417,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
   scale_fill_distiller(
     palette = "Spectral",
     limits  = c(0, wind[, max(Mag(u_median, v_median))])) +
-  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
-                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  coord_quickmap(xlim = c(P_West,  P_East),
+                 ylim = c(P_South, P_North)) +
   geom_vector(
     aes(
       mag   =   Mag(u_median, v_median),
@@ -433,6 +448,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
 
 wind     <- ReadNetCDF(afile)
 wind     <- wind[pressure_level == level]
+pander(range(wind$longitude))
+pander(range(wind$latitude))
 
 ggplot(wind, aes(longitude, latitude, fill = height)) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
@@ -446,8 +463,8 @@ ggplot(wind, aes(longitude, latitude, fill = height)) +
   scale_fill_distiller(
     palette = "Spectral",
     limits  = c(0, NA)) +
-  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
-                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  coord_quickmap(xlim = c(P_West,  P_East),
+                 ylim = c(P_South, P_North)) +
   labs(
     y        = expression(Latitude  ~ group("[", degree, "]")),
     x        = expression(Longitude ~ group("[", degree, "]")),
@@ -467,17 +484,13 @@ ggplot(wind, aes(longitude, latitude, fill = v_N)) +
   scale_fill_distiller(
     palette = "Spectral",
     limits  = c(0, NA)) +
-  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
-                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  coord_quickmap(xlim = c(P_West,  P_East),
+                 ylim = c(P_South, P_North)) +
   labs(
     y        = expression(Latitude  ~ group("[", degree, "]")),
     x        = expression(Longitude ~ group("[", degree, "]")),
     fill     = "v_N"
   )
-
-
-unique(wind$v_N)
-unique(wind$u_N)
 
 
 
