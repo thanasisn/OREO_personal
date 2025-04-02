@@ -253,6 +253,9 @@ wind     <- ReadNetCDF(afile)
 wind     <- wind[pressure_level == level]
 range(wind$longitude)
 range(wind$latitude)
+unique(wind$v_N)
+unique(wind$u_N)
+
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
@@ -445,19 +448,36 @@ ggplot(wind, aes(longitude, latitude, fill = height)) +
     limits  = c(0, NA)) +
   coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
                  ylim = c(cnf$D1$South, cnf$D1$North)) +
-  # geom_vector(
-  #   aes(
-  #     mag   =   Mag(u_mean, v_mean),
-  #     angle = Angle(u_mean, v_mean)
-  #   ),
-  #   skip         = 0,
-  #   arrow.length = 0.3,
-  #   show.legend  = F) +
   labs(
     y        = expression(Latitude  ~ group("[", degree, "]")),
     x        = expression(Longitude ~ group("[", degree, "]")),
     fill     = "km.a.s.l"
   )
+
+
+ggplot(wind, aes(longitude, latitude, fill = v_N)) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray10",
+          size   = .4) +
+  theme_bw() +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits  = c(0, NA)) +
+  coord_quickmap(xlim = c(cnf$D1$West,  cnf$D1$East),
+                 ylim = c(cnf$D1$South, cnf$D1$North)) +
+  labs(
+    y        = expression(Latitude  ~ group("[", degree, "]")),
+    x        = expression(Longitude ~ group("[", degree, "]")),
+    fill     = "v_N"
+  )
+
+
+unique(wind$v_N)
+unique(wind$u_N)
 
 
 
