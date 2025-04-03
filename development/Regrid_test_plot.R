@@ -84,12 +84,15 @@ cnf       <- read_yaml(cnf_domus)
 
 
 pander(t(cnf$D1), caption = cnf$D1$name)
+cnf$D1$North - cnf$D1$LatStep/2
 
-
-monthly_files <- list.files(
+# monthly_files <-
+  list.files(
   path = paste0(cnf$ERA5$path_regrid,
                 "/Monthly_",
                 cnf$D1$LatStep, "x", cnf$D1$LonStep),
+  pattern = paste0("ERA5_[0-9]{4}_M[0-9]{2}_lat_",
+                   cnf$D1$South + cnf$D1$LatStep/2, "[.0-9]+_",),
   recursive  = T,
   full.names = T)
 
