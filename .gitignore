@@ -1,0 +1,8 @@
+*.spin.R
+*.spin.Rmd
+*.pdf
+.Rhistory
+.Rproj.user
+Literature
+**/.spyproject
+
