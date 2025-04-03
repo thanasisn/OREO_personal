@@ -96,7 +96,10 @@ cnf$D1$North - cnf$D1$LatStep/2
   recursive  = T,
   full.names = T)
 
-seasonal_files <- list.files(
+  cnf$D1$South + cnf$D1$South %% cnf$D1$LatStep
+  cnf$D1$South %/% cnf$D1$LatStep
+
+  seasonal_files <- list.files(
   path = paste0(cnf$ERA5$path_regrid,
                 "/Seasonal_",
                 cnf$D1$LatStep, "x", cnf$D1$LonStep),
@@ -104,7 +107,12 @@ seasonal_files <- list.files(
   full.names = T)
 
 raw_files <- list.files(
-  path = cnf$ERA5$path_raw,
+  path    = cnf$ERA5$path_raw,
+  pattern = paste0("ERA5_[0-9]{4}_lat_",
+                   cnf$D1$South, "[.0-9]*_",
+                   cnf$D1$North, "[.0-9]*_lon_",
+                   cnf$D1$West,  "[.0-9]*_",
+                   cnf$D1$East,  "[.0-9]*.nc"),
   full.names = T
 )
 
@@ -117,10 +125,11 @@ fl_regrid_ses <- grep(aseas, grep(ayear, seasonal_files, value = T), value = T)
 fl_regrid_mon <- grep(amont, grep(ayear, monthly_files,  value = T), value = T)
 fl_raw        <- grep(ayear, raw_files, value = T)
 
-P_North <- cnf$D1$North + cnf$D1$LatStep * 2
-P_South <- cnf$D1$South - cnf$D1$LatStep
-P_East  <- cnf$D1$East  + cnf$D1$LonStep
-P_West  <- cnf$D1$West  - cnf$D1$LonStep
+plot_pad <- 2
+P_North <- cnf$D1$North + plot_pad
+P_South <- cnf$D1$South - plot_pad
+P_East  <- cnf$D1$East  + plot_pad
+P_West  <- cnf$D1$West  - plot_pad
 
 ##  Raw ERA5 data  -------------------------------------------------------------
 afile    <- fl_raw
@@ -170,7 +179,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
       angle = Angle(u, v)
     ),
     skip         = 10,
-    arrow.length = 0.3) +
+    arrow.length = 0.3,
+    show.legend  = FALSE) +
   labs(
     # title    = basename(afile),
     # subtitle = paste("Level", pressure),
