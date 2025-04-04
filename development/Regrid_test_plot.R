@@ -269,7 +269,7 @@ wind     <- ReadNetCDF(afile)
 wind     <- wind[pressure_level == level]
 
 
-## __ Mean seasonal ERA5 data  -------------------------------------------------
+## _ Seasonal ERA5 regrid  -----------------------------------------------------
 #'
 #' \FloatBarrier
 #' \newpage
@@ -280,9 +280,7 @@ wind     <- wind[pressure_level == level]
 #'
 #' **Level: `r level`**
 #'
-#' ## Mean of components
-#'
-#+ era5-regrid-mean-seas, include=T, echo=F, warning=FALSE, out.width="100%", results='asis'
+#+ include=T, echo=F, warning=FALSE, out.width="100%"
 
 cat("Longitude range: [", paste(range(wind$longitude), collapse = ", "), "]")
 cat("Latitude range:  [", paste(range(wind$latitude),  collapse = ", "), "]")
@@ -294,7 +292,13 @@ pander(cat(unique(wind$latitude)))
 cat("Longitude:")
 pander(cat(unique(wind$longitude)))
 
-
+## __ Mean seasonal ERA5 data  -------------------------------------------------
+#'
+#' \FloatBarrier
+#'
+#' ## Mean of components
+#'
+#+ era5-regrid-mean-seas, include=T, echo=F, warning=FALSE, out.width="100%"
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
@@ -362,33 +366,54 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
   )
 
 
+## __ Consistency of means  ----------------------------------------------------
+#'
+#' \FloatBarrier
+#'
+#' ## Consistency of means
+#'
+#+ era5-regrid-N-seas, include=T, echo=F, warning=FALSE, out.width="100%"
+
+ggplot(wind, aes(longitude, latitude, fill = v_N)) +
+  geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
+  borders("world",
+          xlim   = range(wind$longitude),
+          ylim   = range(wind$latitude),
+          colour = "gray10",
+          size   = .4) +
+  theme_bw() +
+  theme(panel.ontop = TRUE, panel.background = element_blank()) +
+  scale_fill_distiller(
+    palette = "Spectral",
+    limits  = c(0, NA)) +
+  coord_quickmap(xlim = c(P_West,  P_East),
+                 ylim = c(P_South, P_North)) +
+  labs(
+    y        = expression(Latitude  ~ group("[", degree, "]")),
+    x        = expression(Longitude ~ group("[", degree, "]")),
+    fill     = "v_N"
+  )
+
+
 
 
 afile <- fl_regrid_mon
 level <- 1
 MM    <- as.numeric(sub("M", "", amont))
 
+## _ Monthly ERA5 regrid  ------------------------------------------------------
 #'
 #' \FloatBarrier
+#' \newpage
 #'
 #' # Monthly regridded ERA5 data at `r paste0(cnf$D1$LatStep, "x", cnf$D1$LonStep)` for `r ayear`, `r month.name[MM]`
 #'
 #' **File: `r basename(afile)`**
 #'
 #' **Level: `r level`**
-#'
 #' **Month: `r MM`**
 #+ include=T, echo=F, warning=FALSE, out.width="100%"
 
-
-## __ Mean monthly ERA5 data  --------------------------------------------------
-
-#'
-#' \FloatBarrier
-#'
-#' ## Mean of components
-#'
-#+ era5-regrid-mean-month, include=T, echo=F, warning=FALSE, out.width="100%", results='asis'
 
 wind     <- ReadNetCDF(afile)
 wind     <- wind[pressure_level == level]
@@ -404,6 +429,14 @@ cat("Longitude:")
 pander(cat(unique(wind$longitude)))
 
 
+## __ Mean monthly ERA5 data  --------------------------------------------------
+
+#'
+#' \FloatBarrier
+#'
+#' ## Mean of components
+#'
+#+ era5-regrid-mean-month, include=T, echo=F, warning=FALSE, out.width="100%", results='asis'
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
@@ -442,7 +475,6 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
 #' ## Median of components
 #'
 #+ era5-regrid-median-month, include=T, echo=F, warning=FALSE, out.width="100%"
-
 
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
@@ -486,11 +518,6 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
 #'
 #+ era5-regrid-height-month, include=T, echo=F, warning=FALSE, out.width="100%"
 
-wind     <- ReadNetCDF(afile)
-wind     <- wind[pressure_level == level]
-pander(range(wind$longitude))
-pander(range(wind$latitude))
-
 ggplot(wind, aes(longitude, latitude, fill = height)) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
@@ -511,6 +538,14 @@ ggplot(wind, aes(longitude, latitude, fill = height)) +
     fill     = "km.a.s.l"
   )
 
+
+## __ Consistency of means  ----------------------------------------------------
+#'
+#' \FloatBarrier
+#'
+#' ## Consistency of means
+#'
+#+ era5-regrid-N-month, include=T, echo=F, warning=FALSE, out.width="100%"
 
 ggplot(wind, aes(longitude, latitude, fill = v_N)) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
@@ -537,26 +572,12 @@ ggplot(wind, aes(longitude, latitude, fill = v_N)) +
 #'
 #' \FloatBarrier
 #'
-#' ## Domain specs
-#'
-#+ include=T, echo=F, warning=FALSE, out.width="100%"
-
-cat("Longitudes:")
-sort(unique(wind$longitude))
-
-
-cat("Latitudes:")
-sort(unique(wind$latitude))
-
-#'
-#' \FloatBarrier
-#'
 #' ## Height boundary example
 #'
 #+ include=T, echo=T, warning=FALSE, out.width="100%"
 
-wind     <- ReadNetCDF(afile)
-pp <- wind[longitude == min(longitude) & latitude == min(latitude)] |> select(starts_with("heig"))
+wind  <- ReadNetCDF(afile)
+pp    <- wind[longitude == min(longitude) & latitude == min(latitude)] |> select(starts_with("heig"))
 
 pander(pp)
 
