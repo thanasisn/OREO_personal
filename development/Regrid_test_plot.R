@@ -83,26 +83,30 @@ cnf_domus <- paste0("~/OREO/operation/run_profiles/", Sys.info()["nodename"], ".
 cnf       <- read_yaml(cnf_domus)
 
 
-pander(t(cnf$D1), caption = cnf$D1$name)
-cnf$D1$North - cnf$D1$LatStep/2
+pander((cnf$D1), caption = cnf$D1$name)
 
-# monthly_files <-
-  list.files(
+
+monthly_files <- list.files(
   path = paste0(cnf$ERA5$path_regrid,
                 "/Monthly_",
                 cnf$D1$LatStep, "x", cnf$D1$LonStep),
   pattern = paste0("ERA5_[0-9]{4}_M[0-9]{2}_lat_",
-                   cnf$D1$South + cnf$D1$LatStep/2, "[.0-9]+_",),
+                   cnf$D1$South + cnf$D1$LatStep/2, "[.0-9]*_",
+                   cnf$D1$North - cnf$D1$LatStep/2, "[.0-9]*_lon_",
+                   cnf$D1$West  + cnf$D1$LonStep/2, "[.0-9]*_",
+                   cnf$D1$East  - cnf$D1$LonStep/2, "[.0-9]*\\.nc"),
   recursive  = T,
   full.names = T)
 
-  cnf$D1$South + cnf$D1$South %% cnf$D1$LatStep
-  cnf$D1$South %/% cnf$D1$LatStep
-
-  seasonal_files <- list.files(
+seasonal_files <- list.files(
   path = paste0(cnf$ERA5$path_regrid,
                 "/Seasonal_",
                 cnf$D1$LatStep, "x", cnf$D1$LonStep),
+  pattern = paste0("ERA5_[0-9]{4}_Q[0-9]_[MAJSONDF]{3}_lat_",
+                   cnf$D1$South + cnf$D1$LatStep/2, "[.0-9]*_",
+                   cnf$D1$North - cnf$D1$LatStep/2, "[.0-9]*_lon_",
+                   cnf$D1$West  + cnf$D1$LonStep/2, "[.0-9]*_",
+                   cnf$D1$East  - cnf$D1$LonStep/2, "[.0-9]*\\.nc"),
   recursive  = T,
   full.names = T)
 
@@ -113,8 +117,7 @@ raw_files <- list.files(
                    cnf$D1$North, "[.0-9]*_lon_",
                    cnf$D1$West,  "[.0-9]*_",
                    cnf$D1$East,  "[.0-9]*.nc"),
-  full.names = T
-)
+  full.names = T)
 
 ##  Choose inputs  -------------------------------------------------------------
 aseas <- "Q1_DJF"
@@ -154,8 +157,16 @@ wind     <- ReadNetCDF(afile,
                                      longitude = P_East :P_West,
                                      pressure_level = pressure))
 wind <- wind[valid_time == "2020-01-01"]
-range(wind$latitude)
-range(wind$longitude)
+
+cat("Longitude range: [", paste(range(wind$longitude), collapse = ", "), "]  ")
+cat("Latitude range:  [", paste(range(wind$latitude),  collapse = ", "), "]\n")
+
+cat("Latitudes:")
+pander(cat(unique(wind$latitude)))
+
+cat("Longitude:")
+pander(cat(unique(wind$longitude)))
+
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
   geom_tile(
@@ -206,6 +217,16 @@ wind     <- ReadNetCDF(afile,
 wind <- wind[Longitude >= P_West  & Longitude <= P_East]
 wind <- wind[Latitude  >= P_South & Latitude  <= P_North]
 
+cat("Longitude range: [", paste(range(wind$Longitude), collapse = ", "), "]")
+cat("Latitude range:  [", paste(range(wind$Latitude),  collapse = ", "), "]")
+
+cat("Latitudes:")
+pander(cat(unique(wind$Latitude)))
+
+cat("Longitude:")
+pander(cat(unique(wind$Longitude)))
+
+
 ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
   geom_tile(width = 5, height = 2) +
   borders("world",
@@ -236,12 +257,6 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
     fill     = expression(m/s)
   )
 
-cat("Longitudes:")
-sort(unique(wind$Longitude))
-
-
-cat("Latitudes:")
-sort(unique(wind$Latitude))
 
 
 
@@ -257,6 +272,7 @@ wind     <- wind[pressure_level == level]
 ## __ Mean seasonal ERA5 data  -------------------------------------------------
 #'
 #' \FloatBarrier
+#' \newpage
 #'
 #' # Seasonal regridded ERA5 data at `r paste0(cnf$D1$LatStep, "x", cnf$D1$LonStep)` for `r ayear`, `r aseas`
 #'
@@ -268,11 +284,16 @@ wind     <- wind[pressure_level == level]
 #'
 #+ era5-regrid-mean-seas, include=T, echo=F, warning=FALSE, out.width="100%", results='asis'
 
-cat("Longitude range:", range(wind$longitude), "\n")
+cat("Longitude range: [", paste(range(wind$longitude), collapse = ", "), "]")
+cat("Latitude range:  [", paste(range(wind$latitude),  collapse = ", "), "]")
+cat("Cell N points:   [", paste(c(unique(wind$v_N), unique(wind$u_N)), collapse = ", "), "]")
 
-cat("\nLatitude range:", range(wind$latitude), "\n")
+cat("Latitudes:")
+pander(cat(unique(wind$latitude)))
 
-cat("\nCell N points:", unique(wind$v_N), unique(wind$u_N), "\n")
+cat("Longitude:")
+pander(cat(unique(wind$longitude)))
+
 
 
 ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
@@ -305,6 +326,8 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
 
 
 ## __ Median seasonal ERA5 data  -----------------------------------------------
+#'
+#' \FloatBarrier
 #'
 #' ## Median of components
 #'
@@ -370,11 +393,15 @@ MM    <- as.numeric(sub("M", "", amont))
 wind     <- ReadNetCDF(afile)
 wind     <- wind[pressure_level == level]
 
-cat("Longitude range:", range(wind$longitude), "\n")
+cat("Longitude range: [", paste(range(wind$longitude), collapse = ", "), "]")
+cat("Latitude range:  [", paste(range(wind$latitude),  collapse = ", "), "]")
+cat("Cell N points:   [", paste(c(unique(wind$v_N), unique(wind$u_N)), collapse = ", "), "]")
 
-cat("\nLatitude range:", range(wind$latitude), "\n")
+cat("Latitudes:")
+pander(cat(unique(wind$latitude)))
 
-cat("\nCell N points:", unique(wind$v_N), unique(wind$u_N), "\n")
+cat("Longitude:")
+pander(cat(unique(wind$longitude)))
 
 
 
