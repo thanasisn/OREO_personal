@@ -77,6 +77,10 @@ library(terra,      warn.conflicts = FALSE, quietly = TRUE)
 library(metR,       warn.conflicts = FALSE, quietly = TRUE)
 
 
+library(rgl,       warn.conflicts = FALSE, quietly = TRUE)
+library(matlib,    warn.conflicts = FALSE, quietly = TRUE)
+
+
 #+ include=T, echo=F, results="asis"
 ##  Read config  ---------------------------------------------------------------
 cnf_domus <- paste0("~/OREO/operation/run_profiles/", Sys.info()["nodename"], ".yaml")
@@ -406,9 +410,17 @@ show(p)
 #'
 #' \FloatBarrier
 #'
-#' ## Height bounds
+#' ## 3Ds
 #'
 
+rglwidget()
+xyz <- matrix(rnorm(300), ncol = 3)
+plot3d(xyz)
+arrow3d(xyz[1,], xyz[2,], type = "extrusion", col = "red")
+arrow3d(xyz[3,], xyz[4,], type = "flat",      col = "blue")
+arrow3d(xyz[5,], xyz[6,], type = "rotation",  col = "green")
+arrow3d(xyz[7,], xyz[8,], type = "lines",     col = "black")
+arrow3d(spriteOrigin = xyz[9:12,],            col = "purple")
 
 
 
