@@ -420,10 +420,9 @@ show(p)
 #'
 #' \FloatBarrier
 #'
-#' ## 3Ds
+#' ## Wind profile vectors
 #'
-#' era5-regrid-3Dvec-seas, include=T, echo=F, warning=FALSE, out.width="100%", webgl=TRUE
-
+#+ era5-regrid-3Dvec-seas, include=T, echo=F, warning=FALSE
 
 start <- pp[, .(longitude,          latitude,          height)]
 end   <- pp[, .(longitude + u_mean, latitude + v_mean, height)]
@@ -437,25 +436,12 @@ plot3d(1,1,1,
        ylab = "Latitude",
        zlab = "Altutude"
        )
+bg3d(color = "white")
 for (a in 1:nrow(start)) {
   arrow3d(matrix(start[a,], ncol = 3),
           matrix(end  [a,], ncol = 3), type = "lines", col = "green")
 }
 
-rglwidget()
-plot3d(1,1,1,
-       xlim = range(start[, 1], end[, 1]),
-       ylim = range(start[, 2], end[, 2]),
-       zlim = range(start[, 3], end[, 3]),
-       xlab = "Longiture",
-       ylab = "Latitude",
-       zlab = "Altutude"
-)
-for (a in 1:nrow(start)) {
-  arrow3d(matrix(start[a,], ncol = 3),
-          matrix(end  [a,], ncol = 3), type = "extrusion", col = "blue")
-}
-
 
 
 rglwidget()
@@ -467,24 +453,10 @@ plot3d(1,1,1,
        ylab = "Latitude",
        zlab = "Altutude"
 )
+bg3d(color = "white")
 for (a in 1:nrow(start)) {
   arrow3d(matrix(start[a,], ncol = 3),
           matrix(end  [a,], ncol = 3), type = "rotation", col = "red")
-}
-
-
-rglwidget()
-plot3d(1,1,1,
-       xlim = range(start[, 1], end[, 1]),
-       ylim = range(start[, 2], end[, 2]),
-       zlim = range(start[, 3], end[, 3]),
-       xlab = "Longiture",
-       ylab = "Latitude",
-       zlab = "Altutude"
-)
-for (a in 1:nrow(start)) {
-  arrow3d(matrix(start[a,], ncol = 3),
-          matrix(end  [a,], ncol = 3), type = "flat", col = "magenta")
 }
 
 
