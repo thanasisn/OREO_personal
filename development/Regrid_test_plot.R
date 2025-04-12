@@ -168,7 +168,7 @@ cat("Longitude:")
 pander(cat(unique(wind$longitude)))
 
 
-ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
+p <- ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
   geom_tile(
     width  = 0.25,
     height = 0.25) +
@@ -199,7 +199,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u, v))) +
     x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
-
+show(p)
 
 ##  Manolis regridded ERA5 data  -----------------------------------------------
 
@@ -227,7 +227,7 @@ cat("Longitude:")
 pander(cat(unique(wind$Longitude)))
 
 
-ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
+p <- ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
   geom_tile(width = 5, height = 2) +
   borders("world",
           xlim   = range(wind$Longitude),
@@ -256,7 +256,7 @@ ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
     x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
-
+show(P)
 
 
 
@@ -300,7 +300,7 @@ pander(cat(unique(wind$longitude)))
 #'
 #+ era5-regrid-mean-seas, include=T, echo=F, warning=FALSE, out.width="100%"
 
-ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
+p <- ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -327,6 +327,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
     x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
+show(p)
 
 
 ## __ Median seasonal ERA5 data  -----------------------------------------------
@@ -337,7 +338,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
 #'
 #+ era5-regrid-median-seas, include=T, echo=F, warning=FALSE, out.width="100%"
 
-ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
+p <- ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -364,7 +365,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
     x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
-
+show(p)
 
 ## __ Consistency of means  ----------------------------------------------------
 #'
@@ -374,7 +375,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
 #'
 #+ era5-regrid-N-seas, include=T, echo=F, warning=FALSE, out.width="100%"
 
-ggplot(wind, aes(longitude, latitude, fill = v_N)) +
+p <- ggplot(wind, aes(longitude, latitude, fill = v_N)) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -393,7 +394,7 @@ ggplot(wind, aes(longitude, latitude, fill = v_N)) +
     x        = expression(Longitude ~ group("[", degree, "]")),
     fill     = "v_N"
   )
-
+show(p)
 
 
 
@@ -438,7 +439,7 @@ pander(cat(unique(wind$longitude)))
 #'
 #+ era5-regrid-mean-month, include=T, echo=F, warning=FALSE, out.width="100%", results='asis'
 
-ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
+p <- ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -465,7 +466,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
     x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
-
+show(p)
 
 ## __ Median monthly ERA5 data  ------------------------------------------------
 
@@ -477,7 +478,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_mean, v_mean))) +
 #+ era5-regrid-median-month, include=T, echo=F, warning=FALSE, out.width="100%"
 
 
-ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
+p <- ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -504,7 +505,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
     x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
-
+show(p)
 
 
 
@@ -518,7 +519,7 @@ ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
 #'
 #+ era5-regrid-height-month, include=T, echo=F, warning=FALSE, out.width="100%"
 
-ggplot(wind, aes(longitude, latitude, fill = height)) +
+p <- ggplot(wind, aes(longitude, latitude, fill = height)) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -537,7 +538,7 @@ ggplot(wind, aes(longitude, latitude, fill = height)) +
     x        = expression(Longitude ~ group("[", degree, "]")),
     fill     = "km.a.s.l"
   )
-
+show(p)
 
 ## __ Consistency of means  ----------------------------------------------------
 #'
@@ -547,7 +548,7 @@ ggplot(wind, aes(longitude, latitude, fill = height)) +
 #'
 #+ era5-regrid-N-month, include=T, echo=F, warning=FALSE, out.width="100%"
 
-ggplot(wind, aes(longitude, latitude, fill = v_N)) +
+p <- ggplot(wind, aes(longitude, latitude, fill = v_N)) +
   geom_tile(width = cnf$D1$LonStep, height = cnf$D1$LatStep) +
   borders("world",
           xlim   = range(wind$longitude),
@@ -566,7 +567,7 @@ ggplot(wind, aes(longitude, latitude, fill = v_N)) +
     x        = expression(Longitude ~ group("[", degree, "]")),
     fill     = "v_N"
   )
-
+show(p)
 
 
 #'
