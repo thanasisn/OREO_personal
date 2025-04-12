@@ -19,6 +19,15 @@
 #' - \captionsetup{font=small}
 #'
 #' output:
+#'   bookdown::html_document2:
+#'     number_sections:  no
+#'     fig_caption:      no
+#'     keep_tex:         yes
+#'     keep_md:          no
+#'     toc:              yes
+#'     toc_depth:        5
+#'     fig_width:        10
+#'     fig_height:       5
 #'   bookdown::pdf_document2:
 #'     number_sections:  no
 #'     fig_caption:      no
@@ -54,6 +63,7 @@ knitr::opts_chunk$set(tidy = TRUE,
                         args.newline = TRUE,
                         arrow        = TRUE)
 )
+knitr::knit_hooks$set(webgl = hook_webgl)
 
 ## __ Set environment  ---------------------------------------------------------
 closeAllConnections()
@@ -412,22 +422,74 @@ show(p)
 #'
 #' ## 3Ds
 #'
+#' era5-regrid-3Dvec-seas, include=T, echo=F, warning=FALSE, out.width="100%", webgl=TRUE
+
+
+start <- pp[, .(longitude,          latitude,          height)]
+end   <- pp[, .(longitude + u_mean, latitude + v_mean, height)]
 
 rglwidget()
-xyz <- matrix(rnorm(300), ncol = 3)
-plot3d(xyz)
-arrow3d(xyz[1,], xyz[2,], type = "extrusion", col = "red")
-arrow3d(xyz[3,], xyz[4,], type = "flat",      col = "blue")
-arrow3d(xyz[5,], xyz[6,], type = "rotation",  col = "green")
-arrow3d(xyz[7,], xyz[8,], type = "lines",     col = "black")
-arrow3d(spriteOrigin = xyz[9:12,],            col = "purple")
+plot3d(1,1,1,
+       xlim = range(start[, 1], end[, 1]),
+       ylim = range(start[, 2], end[, 2]),
+       zlim = range(start[, 3], end[, 3]),
+       xlab = "Longiture",
+       ylab = "Latitude",
+       zlab = "Altutude"
+       )
+for (a in 1:nrow(start)) {
+  arrow3d(matrix(start[a,], ncol = 3),
+          matrix(end  [a,], ncol = 3), type = "lines", col = "green")
+}
+
+rglwidget()
+plot3d(1,1,1,
+       xlim = range(start[, 1], end[, 1]),
+       ylim = range(start[, 2], end[, 2]),
+       zlim = range(start[, 3], end[, 3]),
+       xlab = "Longiture",
+       ylab = "Latitude",
+       zlab = "Altutude"
+)
+for (a in 1:nrow(start)) {
+  arrow3d(matrix(start[a,], ncol = 3),
+          matrix(end  [a,], ncol = 3), type = "extrusion", col = "blue")
+}
+
+
+
+rglwidget()
+plot3d(1,1,1,
+       xlim = range(start[, 1], end[, 1]),
+       ylim = range(start[, 2], end[, 2]),
+       zlim = range(start[, 3], end[, 3]),
+       xlab = "Longiture",
+       ylab = "Latitude",
+       zlab = "Altutude"
+)
+for (a in 1:nrow(start)) {
+  arrow3d(matrix(start[a,], ncol = 3),
+          matrix(end  [a,], ncol = 3), type = "rotation", col = "red")
+}
+
+
+rglwidget()
+plot3d(1,1,1,
+       xlim = range(start[, 1], end[, 1]),
+       ylim = range(start[, 2], end[, 2]),
+       zlim = range(start[, 3], end[, 3]),
+       xlab = "Longiture",
+       ylab = "Latitude",
+       zlab = "Altutude"
+)
+for (a in 1:nrow(start)) {
+  arrow3d(matrix(start[a,], ncol = 3),
+          matrix(end  [a,], ncol = 3), type = "flat", col = "magenta")
+}
 
 
 
 
-
-
-# stop()
 
 ## __ Consistency of means  ----------------------------------------------------
 #'
@@ -632,6 +694,7 @@ p <- ggplot(wind, aes(longitude, latitude, fill = v_N)) +
 show(p)
 
 
+## Height boundary example ----------------------
 #'
 #' \FloatBarrier
 #'
