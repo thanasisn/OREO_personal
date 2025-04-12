@@ -256,7 +256,7 @@ p <- ggplot(wind, aes(Longitude, Latitude, fill = Mag(U, V))) +
     x        = expression(Longitude ~ group("[",degree,"]")),
     fill     = expression(m/s)
   )
-show(P)
+show(p)
 
 
 
@@ -366,6 +366,56 @@ p <- ggplot(wind, aes(longitude, latitude, fill = Mag(u_median, v_median))) +
     fill     = expression(m/s)
   )
 show(p)
+
+
+##  Vertical bounds and magnitude  ---------------------------------------------
+
+wind     <- ReadNetCDF(afile)
+## select a random location
+alon <- sample(unique(wind$longitude), 1)
+alat <- sample(unique(wind$latitude),  1)
+
+#'
+#' \FloatBarrier
+#'
+#' ## Vertical bounds and wind magnitude at Lat: `r alat`, Lon: `r alon`
+#'
+#+ era5-regrid-vertical-magnitude-seas, include=T, echo=F, warning=FALSE, out.width="100%",height=10,width=5
+
+pp <- wind[longitude == alon & latitude == alat]
+pp[, cc := .I %% 2]
+
+p <- ggplot(pp) +
+  geom_rect(
+    aes(ymin = height_low,
+        ymax = height_up,
+        xmin = 0,
+        xmax = Mag(u_mean, v_mean),
+        fill = cc)) +
+  labs(
+    x = expression(Wind~magnitude ~ group("[",m/s,"]")),
+    y = expression(Altitude ~ group("[",m,"]"))
+  ) +
+  theme_bw() +
+  theme(legend.position = "none")
+show(p)
+
+
+
+
+#'
+#' \FloatBarrier
+#'
+#' ## Height bounds
+#'
+
+
+
+
+
+
+
+# stop()
 
 ## __ Consistency of means  ----------------------------------------------------
 #'
