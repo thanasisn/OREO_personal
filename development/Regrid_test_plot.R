@@ -63,13 +63,12 @@ knitr::opts_chunk$set(tidy = TRUE,
                         args.newline = TRUE,
                         arrow        = TRUE)
 )
-knitr::knit_hooks$set(webgl = hook_webgl)
 
 ## __ Set environment  ---------------------------------------------------------
 closeAllConnections()
 Sys.setenv(TZ = "UTC")
 tic <- Sys.time()
-Script.Name  <- "~/OREO/development/plot_test_output.R"
+Script.Name  <- "~/OREO/development/Regrid_test_plot.R"
 
 if (!interactive()) {
   pdf(file = paste0("~/OREO/REPORTS/RUNTIME/", basename(sub("\\.R$", ".pdf", Script.Name))))
@@ -90,6 +89,7 @@ library(metR,       warn.conflicts = FALSE, quietly = TRUE)
 library(rgl,       warn.conflicts = FALSE, quietly = TRUE)
 library(matlib,    warn.conflicts = FALSE, quietly = TRUE)
 
+knitr::knit_hooks$set(webgl = hook_webgl)
 
 #+ include=T, echo=F, results="asis"
 ##  Read config  ---------------------------------------------------------------
