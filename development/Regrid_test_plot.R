@@ -427,37 +427,37 @@ show(p)
 start <- pp[, .(longitude,          latitude,          height)]
 end   <- pp[, .(longitude + u_mean, latitude + v_mean, height)]
 
-rglwidget()
-plot3d(1,1,1,
-       xlim = range(start[, 1], end[, 1]),
-       ylim = range(start[, 2], end[, 2]),
-       zlim = range(start[, 3], end[, 3]),
-       xlab = "Longiture",
-       ylab = "Latitude",
-       zlab = "Altutude"
-       )
-bg3d(color = "white")
-for (a in 1:nrow(start)) {
-  arrow3d(matrix(start[a,], ncol = 3),
-          matrix(end  [a,], ncol = 3), type = "lines", col = "green")
-}
-
-
-
-rglwidget()
-plot3d(1,1,1,
-       xlim = range(start[, 1], end[, 1]),
-       ylim = range(start[, 2], end[, 2]),
-       zlim = range(start[, 3], end[, 3]),
-       xlab = "Longiture",
-       ylab = "Latitude",
-       zlab = "Altutude"
-)
-bg3d(color = "white")
-for (a in 1:nrow(start)) {
-  arrow3d(matrix(start[a,], ncol = 3),
-          matrix(end  [a,], ncol = 3), type = "rotation", col = "red")
-}
+# rglwidget()
+# plot3d(1,1,1,
+#        xlim = range(start[, 1], end[, 1]),
+#        ylim = range(start[, 2], end[, 2]),
+#        zlim = range(start[, 3], end[, 3]),
+#        xlab = "Longiture",
+#        ylab = "Latitude",
+#        zlab = "Altutude"
+#        )
+# bg3d(color = "white")
+# for (a in 1:nrow(start)) {
+#   arrow3d(matrix(start[a,], ncol = 3),
+#           matrix(end  [a,], ncol = 3), type = "lines", col = "green")
+# }
+#
+#
+#
+# rglwidget()
+# plot3d(1,1,1,
+#        xlim = range(start[, 1], end[, 1]),
+#        ylim = range(start[, 2], end[, 2]),
+#        zlim = range(start[, 3], end[, 3]),
+#        xlab = "Longiture",
+#        ylab = "Latitude",
+#        zlab = "Altutude"
+# )
+# bg3d(color = "white")
+# for (a in 1:nrow(start)) {
+#   arrow3d(matrix(start[a,], ncol = 3),
+#           matrix(end  [a,], ncol = 3), type = "rotation", col = "red")
+# }
 
 
 
