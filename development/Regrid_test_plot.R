@@ -23,7 +23,7 @@
 #'     number_sections:  no
 #'     fig_caption:      no
 #'     keep_tex:         yes
-#'     keep_md:          yes
+#'     keep_md:          no
 #'     toc:              yes
 #'     toc_depth:        5
 #'     fig_width:        10
@@ -32,7 +32,7 @@
 #'     number_sections:  no
 #'     fig_caption:      no
 #'     keep_tex:         yes
-#'     keep_md:          yes
+#'     keep_md:          no
 #'     latex_engine:     xelatex
 #'     toc:              yes
 #'     toc_depth:        5
